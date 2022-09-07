@@ -55,6 +55,7 @@
   grid-template-rows: 33% 33% 33%;
   gap: 10px 20px;
   font-size: 48pt;
+  height: fit-content;
 }
 
 span {
@@ -89,6 +90,16 @@ span {
 
 .modal-button {
   margin:5px;
+}
+
+.modal-textdiv {
+  width: 10em;
+  font-size: 30pt;
+  font-weight: bold;
+}
+
+.modal-textbox {
+  font-size: 25pt;
 }
 
 .modal p + p {

@@ -105,7 +105,32 @@ export default class PlaylisterController {
             // CLOSE THE MODAL
             let deleteListModal = document.getElementById("delete-list-modal");
             deleteListModal.classList.remove("is-visible");
-        }        
+        }
+
+        // HANDLES CONFIRM BUTTON FOR EDIT MENU
+        let editSongConfirmButton = document.getElementById("edit-song-confirm-button");
+        editSongConfirmButton.onclick = (event) => {
+            let songId = this.model.getEditSongId();
+            
+            this.model.updateSong(songId, document.getElementById("title-box").value,
+                                    document.getElementById("artist-box").value,
+                                    document.getElementById("id-box").value);
+            
+            // CLOSE THE MODAL
+            let deleteListModal = document.getElementById("edit-song-modal");
+            deleteListModal.classList.remove("is-visible");
+        }
+
+        // RESPOND TO THE USER CLOSING THE EDIT SONG MODAL
+        let editSongCancelButton = document.getElementById("edit-song-cancel-button");
+        editSongCancelButton.onclick = (event) => {
+            // ALLOW OTHER INTERACTIONS
+            this.model.toggleConfirmDialogOpen();
+            
+            // CLOSE THE MODAL
+            let deleteListModal = document.getElementById("edit-song-modal");
+            deleteListModal.classList.remove("is-visible");
+        } 
     }
 
     /*
@@ -240,6 +265,21 @@ export default class PlaylisterController {
                     && !isNaN(toIndex)) {
                     this.model.addMoveSongTransaction(fromIndex, toIndex);
                 }
+            }
+
+            card.ondblclick = (event) => {
+                let changeSongModal = document.getElementById("edit-song-modal");
+
+                // SET THE EDIT SONG ID
+                this.model.setEditSongId(i);
+
+                // INJECT SONG INFO INTO FORM
+                let thisSong = this.model.getSong(i);
+                document.getElementById("title-box").value = thisSong.title;
+                document.getElementById("artist-box").value = thisSong.artist;
+                document.getElementById("id-box").value = thisSong.youTubeId;
+
+                changeSongModal.classList.add("is-visible");
             }
         }
     }

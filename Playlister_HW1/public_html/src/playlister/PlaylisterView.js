@@ -123,8 +123,6 @@ export default class PlaylisterView {
 
             // AND PUT THE CARD INTO THE UI
             itemsDiv.appendChild(itemDiv);
-
-            
         }
         // NOW THAT THE CONTROLS EXIST WE CAN REGISTER EVENT
         // HANDLERS FOR THEM
@@ -203,6 +201,7 @@ export default class PlaylisterView {
         let tps = model.tps;
         if (model.confirmDialogOpen) {
             this.disableButton("add-list-button");
+            // this.disableButton("add-song-button");
             this.disableButton("undo-button");
             this.disableButton("redo-button");
             this.disableButton("close-button");

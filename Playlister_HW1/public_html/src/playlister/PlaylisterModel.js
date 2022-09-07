@@ -76,6 +76,14 @@ export default class PlaylisterModel {
         return this.currentList.songs[index];
     }
 
+    getEditSongId() {
+        return this.editSongId;
+    }
+
+    setEditSongId(initId) {
+        this.editSongId = initId;
+    }
+
     getDeleteListId() {
         return this.deleteListId;
     }
@@ -264,6 +272,15 @@ export default class PlaylisterModel {
 
     addNewSong(initName, initArtist, initYTID) {
         this.currentList.addSong({title: initName, artist: initArtist, youTubeId: initYTID});
+        this.view.refreshPlaylist(this.currentList);
+    }
+
+    // UPDATE SONG INFO
+    updateSong(index, newTitle, newName, newID) {
+        this.currentList.getSongAt(index).title = newTitle;
+        this.currentList.getSongAt(index).artist = newName;
+        this.currentList.getSongAt(index).youTubeId = newID;
+
         this.view.refreshPlaylist(this.currentList);
     }
 
