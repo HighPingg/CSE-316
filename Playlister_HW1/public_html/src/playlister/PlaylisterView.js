@@ -118,8 +118,17 @@ export default class PlaylisterView {
             hyperlink.href = "https://youtube.com/watch?v=" + song.youTubeId;
             hyperlink.innerText = song.title + " by " + song.artist;
             let itemText = document.createTextNode((i + 1) + ". ");
+
+            // CREATES THE DELETE BUTTON AT THE END
+            let deleteButton = document.createElement("input");
+            deleteButton.setAttribute("type", "button");
+            deleteButton.setAttribute("id", "delete-song-" + i);
+            deleteButton.setAttribute("class", "list-card-button");
+            deleteButton.setAttribute("value", "X");
+
             itemDiv.appendChild(itemText);
-            itemDiv.appendChild(hyperlink)
+            itemDiv.appendChild(hyperlink);
+            itemDiv.appendChild(deleteButton);
 
             // AND PUT THE CARD INTO THE UI
             itemsDiv.appendChild(itemDiv);

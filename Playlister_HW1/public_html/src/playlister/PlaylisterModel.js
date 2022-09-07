@@ -92,6 +92,14 @@ export default class PlaylisterModel {
         this.deleteListId = initId;
     }
 
+    getDeleteSongId() {
+        return this.deleteSongId;
+    }
+
+    setDeleteSongId(index) {
+        this.deleteSongId = index;
+    }
+
     toggleConfirmDialogOpen() {
         this.confirmDialogOpen = !this.confirmDialogOpen;
         this.view.updateToolbarButtons(this);
@@ -280,6 +288,12 @@ export default class PlaylisterModel {
         this.currentList.getSongAt(index).title = newTitle;
         this.currentList.getSongAt(index).artist = newName;
         this.currentList.getSongAt(index).youTubeId = newID;
+
+        this.view.refreshPlaylist(this.currentList);
+    }
+
+    removeSong(index) {
+        this.currentList.removeSong(index);
 
         this.view.refreshPlaylist(this.currentList);
     }
