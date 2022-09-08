@@ -39,6 +39,10 @@ export default class Playlist {
         this.songs.splice(index, 1);
     }
 
+    insertSong(index, song) {
+        this.songs.splice(index, 0, song);
+    }
+
     moveSong(oldIndex, newIndex) {
         this.songs.splice(newIndex, 0, this.songs.splice(oldIndex, 1)[0]);
     }

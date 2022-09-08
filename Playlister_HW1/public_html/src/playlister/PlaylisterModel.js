@@ -1,5 +1,8 @@
 import jsTPS from "../common/jsTPS.js";
 import Playlist from "./Playlist.js";
+import AddSong_Transaction from "./transactions/AddSong_Transaction.js";
+import EditSong_Transaction from "./transactions/EditSong_Transaction.js";
+import RemoveSong_Transaction from "./transactions/RemoveSong_Transaction.js";
 import MoveSong_Transaction from "./transactions/MoveSong_Transaction.js";
 
 /**
@@ -283,6 +286,16 @@ export default class PlaylisterModel {
         this.view.refreshPlaylist(this.currentList);
     }
 
+    removeLastSong() {
+        this.currentList.removeSong(this.currentList.songs.length - 1);
+        this.view.refreshPlaylist(this.currentList);
+    }
+
+    insertSong(index, song) {
+        this.currentList.insertSong(index, song);
+        this.view.refreshPlaylist(this.currentList);
+    }
+
     // UPDATE SONG INFO
     updateSong(index, newTitle, newName, newID) {
         this.currentList.getSongAt(index).title = newTitle;
@@ -303,6 +316,24 @@ export default class PlaylisterModel {
 
     addMoveSongTransaction(fromIndex, onIndex) {
         let transaction = new MoveSong_Transaction(this, fromIndex, onIndex);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
+
+    addAddSongTransaction() {
+        let transaction = new AddSong_Transaction(this);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
+
+    addEditSongTransaction(index, oldSong, newSong) {
+        let transaction = new EditSong_Transaction(this, index, oldSong, newSong);
+        this.tps.addTransaction(transaction);
+        this.view.updateToolbarButtons(this);
+    }
+
+    addRemoveSongTransaction(index, song) {
+        let transaction = new RemoveSong_Transaction(this, index, song);
         this.tps.addTransaction(transaction);
         this.view.updateToolbarButtons(this);
     }

@@ -53,7 +53,8 @@ export default class PlaylisterController {
         }
         // HANDLER FOR ADD SONG BUTTON
         document.getElementById("add-song-button").onmousedown = (event) => {
-            this.model.addNewSong("Untitled", "Unknown", "dQw4w9WgXcQ");
+            // this.model.addNewSong("Untitled", "Unknown", "dQw4w9WgXcQ");
+            this.model.addAddSongTransaction();
         }
         // HANDLER FOR UNDO BUTTON
         document.getElementById("undo-button").onmousedown = (event) => {
@@ -111,8 +112,14 @@ export default class PlaylisterController {
         // RESPOND TO THE USER CONFIRMING TO DELETE A PLAYLIST
         let deleteSongConfirmButton = document.getElementById("delete-song-confirm-button");
         deleteSongConfirmButton.onclick = (event) => {
-            this.model.removeSong(this.model.getDeleteSongId());
+            let songId = this.model.getDeleteSongId();
 
+            let song = {title: this.model.getSong(songId).title,
+                artist: this.model.getSong(songId).artist,
+                youTubeId: this.model.getSong(songId).youTubeId};
+
+            this.model.addRemoveSongTransaction(songId, song);
+            
             // ALLOW OTHER INTERACTIONS
             this.model.toggleConfirmDialogOpen();
 
@@ -137,9 +144,14 @@ export default class PlaylisterController {
         editSongConfirmButton.onclick = (event) => {
             let songId = this.model.getEditSongId();
             
-            this.model.updateSong(songId, document.getElementById("title-box").value,
-                                    document.getElementById("artist-box").value,
-                                    document.getElementById("id-box").value);
+            let newSong = {title: document.getElementById("title-box").value,
+                           artist: document.getElementById("artist-box").value,
+                           youTubeId: document.getElementById("id-box").value};
+            let oldSong = {title: this.model.getSong(songId).title,
+                           artist: this.model.getSong(songId).artist,
+                           youTubeId: this.model.getSong(songId).youTubeId};
+
+            this.model.addEditSongTransaction(songId, oldSong, newSong);
 
             // ALLOW OTHER INTERACTIONS
             this.model.toggleConfirmDialogOpen();
