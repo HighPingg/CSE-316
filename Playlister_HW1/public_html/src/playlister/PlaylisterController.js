@@ -308,6 +308,9 @@ export default class PlaylisterController {
             }
 
             card.ondblclick = (event) => {
+                // DISALLOW INTERACTIONS
+                this.model.toggleConfirmDialogOpen();
+
                 let changeSongModal = document.getElementById("edit-song-modal");
 
                 // SET THE EDIT SONG ID

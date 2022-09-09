@@ -52,6 +52,20 @@ export default class PlaylisterModel {
     refreshToolbar() {
         this.view.updateToolbarButtons(this);
     }
+
+    refreshListFunctions() {
+        if (this.hasCurrentList()) {
+            this.view.enableButton("add-song-button");
+            this.view.enableButton("undo-button");
+            this.view.enableButton("redo-button");
+            this.view.enableButton("close-button");
+        } else {
+            this.view.disableButton("add-song-button");
+            this.view.disableButton("undo-button");
+            this.view.disableButton("redo-button");
+            this.view.disableButton("close-button");
+        }
+    }
     
     // FIRST WE HAVE THE ACCESSOR (get) AND MUTATOR (set) METHODS
     // THAT GET AND SET BASIC VALUES NEEDED FOR COORDINATING INTERACTIONS
@@ -214,6 +228,7 @@ export default class PlaylisterModel {
             this.view.clearWorkspace();
             this.tps.clearAllTransactions();
             this.view.updateToolbarButtons(this);
+            this.refreshListFunctions();
         }
     }
 
