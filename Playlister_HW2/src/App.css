@@ -19,7 +19,7 @@ body {
 
 #root {
   background-color: var(--swatch-primary);
-  font-family: serif;
+  font-family: 'Tangerine', serif;
   position: absolute;
   width: 80%;
   left: 10%;
@@ -108,8 +108,17 @@ body {
   float:left;
 }
 
+.toolbar-button {
+  font-size:36pt;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  box-shadow: 2px 4px #888888;
+  border-radius: 5px;
+}
+
 .list-card, .selected-list-card, .unselected-list-card {
-  font-size: 18pt;
+  font-size: 32pt;
   margin: 10px;
   padding: 20px;
   border-radius: 25px;
@@ -132,7 +141,7 @@ body {
 
 .list-card-button {
   float:right;
-  font-size:18pt;
+  font-size:24pt;
 }
 
 .playlister-button, .playlister-button-disabled {
@@ -154,10 +163,16 @@ body {
 }
 
 .playlister-song, .playlister-song-dragged-to { 
-  display:flex;
+  /* display:flex;
   align-items: center;
   font-size: 24pt;
   height:20%;
+   */
+   
+  font-size: 32pt;
+  margin: 10px;
+  padding: 20px;
+  border-radius: 25px;
 }
 
 input {
