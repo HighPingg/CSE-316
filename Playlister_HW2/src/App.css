@@ -236,6 +236,7 @@ input {
   grid-template-rows: 33% 33% 33%;
   gap: 10px 20px;
   font-size: 48pt;
+  height: fit-content;
 }
 
 span {

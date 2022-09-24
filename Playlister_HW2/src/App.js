@@ -7,6 +7,7 @@ import jsTPS from './common/jsTPS.js';
 
 // OUR TRANSACTIONS
 import MoveSong_Transaction from './transactions/MoveSong_Transaction.js';
+import EditSong_Transaction from './transactions/EditSong_Transaction';
 
 // THESE REACT COMPONENTS ARE MODALS
 import DeleteListModal from './components/DeleteListModal.js';
@@ -18,6 +19,7 @@ import PlaylistCards from './components/PlaylistCards.js';
 import SidebarHeading from './components/SidebarHeading.js';
 import SidebarList from './components/SidebarList.js';
 import Statusbar from './components/Statusbar.js';
+import EditSongModal from './components/EditSongModal';
 
 class App extends React.Component {
     constructor(props) {
@@ -134,6 +136,21 @@ class App extends React.Component {
             this.deleteList(this.state.currentList.key);
         }
     }
+
+    updateSong = (index, newSong) => {
+        let updatedList = Array.from(this.state.currentList.songs)
+        updatedList[index] = newSong
+
+        let newCurrentList = Object.assign({}, this.state.currentList)
+        newCurrentList.songs = updatedList
+
+        if (this.state.currentList) {
+            this.setState(prevState => ({
+                currentList: newCurrentList
+            }))
+        }
+    }
+
     renameList = (key, newName) => {
         let newKeyNamePairs = [...this.state.sessionData.keyNamePairs];
         // NOW GO THROUGH THE ARRAY AND FIND THE ONE TO RENAME
@@ -235,6 +252,13 @@ class App extends React.Component {
         let transaction = new MoveSong_Transaction(this, start, end);
         this.tps.addTransaction(transaction);
     }
+
+    addEditSongTransaction = (index, newSong) => {
+        let transaction = new EditSong_Transaction(this, index, this.state.currentList.songs[index], newSong);
+        this.tps.addTransaction(transaction);
+        this.hideEditSongModal()
+    }
+
     // THIS FUNCTION BEGINS THE PROCESS OF PERFORMING AN UNDO
     undo = () => {
         if (this.tps.hasTransactionToUndo()) {
@@ -263,6 +287,15 @@ class App extends React.Component {
             this.showDeleteListModal();
         });
     }
+    markSongForEdit = (songId) => {
+        this.setState(prevState => ({
+            songIdMarkedForEdit: songId - 1,
+            sessionData: prevState.sessionData
+        }), () => {
+            // PROMPT THE USER
+            this.showEditSongModal();
+        });
+    }
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
     showDeleteListModal() {
@@ -272,6 +305,14 @@ class App extends React.Component {
     // THIS FUNCTION IS FOR HIDING THE MODAL
     hideDeleteListModal() {
         let modal = document.getElementById("delete-list-modal");
+        modal.classList.remove("is-visible");
+    }
+    showEditSongModal() {
+        let modal = document.getElementById("edit-song-modal");
+        modal.classList.add("is-visible");
+    }
+    hideEditSongModal() {
+        let modal = document.getElementById("edit-song-modal");
         modal.classList.remove("is-visible");
     }
     render() {
@@ -303,13 +344,21 @@ class App extends React.Component {
                 />
                 <PlaylistCards
                     currentList={this.state.currentList}
-                    moveSongCallback={this.addMoveSongTransaction} />
+                    editSongCallback={this.markSongForEdit}
+                    moveSongCallback={this.addMoveSongTransaction}
+                />
                 <Statusbar 
                     currentList={this.state.currentList} />
                 <DeleteListModal
                     listKeyPair={this.state.listKeyPairMarkedForDeletion}
                     hideDeleteListModalCallback={this.hideDeleteListModal}
                     deleteListCallback={this.deleteMarkedList}
+                />
+                <EditSongModal
+                    songId={this.state.songIdMarkedForEdit}
+                    song={this.state.songIdMarkedForEdit != null ? this.state.currentList.songs[this.state.songIdMarkedForEdit] : null}
+                    hideEditSongModalCallback={this.hideEditSongModal}
+                    editSongCallback={this.addEditSongTransaction}
                 />
             </React.Fragment>
         );
