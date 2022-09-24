@@ -8,6 +8,7 @@ import jsTPS from './common/jsTPS.js';
 // OUR TRANSACTIONS
 import MoveSong_Transaction from './transactions/MoveSong_Transaction.js';
 import AddSong_Transaction from './transactions/AddSong_Transaction';
+import RemoveSong_Transaction from './transactions/RemoveSong_Transaction';
 import EditSong_Transaction from './transactions/EditSong_Transaction';
 
 // THESE REACT COMPONENTS ARE MODALS
@@ -21,6 +22,7 @@ import SidebarHeading from './components/SidebarHeading.js';
 import SidebarList from './components/SidebarList.js';
 import Statusbar from './components/Statusbar.js';
 import EditSongModal from './components/EditSongModal';
+import RemoveSongModal from './components/RemoveSongModal'
 
 class App extends React.Component {
     constructor(props) {
@@ -196,6 +198,24 @@ class App extends React.Component {
         this.removeSong(this.state.currentList.songs.length - 1)
     }
 
+    insertSong = (index, song) => {
+        let updatedList = Array.from(this.state.currentList.songs);
+        updatedList.splice(index, 0, song);
+
+        let newCurrentList = Object.assign({}, this.state.currentList);
+        newCurrentList.songs = updatedList;
+
+        if (this.state.currentList) {
+            this.setState(prevState => ({
+                currentList: newCurrentList
+            }), () => {
+                // UPDATING THE LIST IN PERMANENT STORAGE
+                // IS AN AFTER EFFECT
+                this.db.mutationUpdateList(newCurrentList);
+            });
+        }
+    }
+
     renameList = (key, newName) => {
         let newKeyNamePairs = [...this.state.sessionData.keyNamePairs];
         // NOW GO THROUGH THE ARRAY AND FIND THE ONE TO RENAME
@@ -304,12 +324,18 @@ class App extends React.Component {
     addEditSongTransaction = (index, newSong) => {
         let transaction = new EditSong_Transaction(this, index, this.state.currentList.songs[index], newSong);
         this.tps.addTransaction(transaction);
-        this.hideEditSongModal()
+        this.hideEditSongModal();
     }
 
     addAddSongTransaction = () => {
         let transaction = new AddSong_Transaction(this);
         this.tps.addTransaction(transaction);
+    }
+
+    addRemoveSongTransaction = (index) => {
+        let transaction = new RemoveSong_Transaction(this, index, this.state.currentList.songs[index]);
+        this.tps.addTransaction(transaction);
+        this.hideRemoveSongModal();
     }
 
     // THIS FUNCTION BEGINS THE PROCESS OF PERFORMING AN UNDO
@@ -349,6 +375,15 @@ class App extends React.Component {
             this.showEditSongModal();
         });
     }
+    markSongForDeletion = (songId) => {
+        this.setState(prevState => ({
+            songIdMarkedForDelete: songId,
+            sessionData: prevState.sessionData
+        }), () => {
+            // PROMPT THE USER
+            this.showRemoveSongModal();
+        });
+    }
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
     showDeleteListModal() {
@@ -366,6 +401,14 @@ class App extends React.Component {
     }
     hideEditSongModal() {
         let modal = document.getElementById("edit-song-modal");
+        modal.classList.remove("is-visible");
+    }
+    showRemoveSongModal() {
+        let modal = document.getElementById("remove-song-modal");
+        modal.classList.add("is-visible");
+    }
+    hideRemoveSongModal() {
+        let modal = document.getElementById("remove-song-modal");
         modal.classList.remove("is-visible");
     }
     render() {
@@ -400,6 +443,7 @@ class App extends React.Component {
                     currentList={this.state.currentList}
                     editSongCallback={this.markSongForEdit}
                     moveSongCallback={this.addMoveSongTransaction}
+                    removeSongCallback={this.markSongForDeletion}
                 />
                 <Statusbar 
                     currentList={this.state.currentList} />
@@ -413,6 +457,12 @@ class App extends React.Component {
                     song={this.state.currentList != null && this.state.currentList.songs != null ? this.state.currentList.songs[this.state.songIdMarkedForEdit] : null}
                     hideEditSongModalCallback={this.hideEditSongModal}
                     editSongCallback={this.addEditSongTransaction}
+                />
+                <RemoveSongModal
+                    index={this.state.songIdMarkedForDelete}
+                    song={this.state.currentList != null && this.state.currentList.songs != null != null ? this.state.currentList.songs[this.state.songIdMarkedForDelete] : null}
+                    removeSongCallback={this.addRemoveSongTransaction}
+                    hideRemoveSongModalCallback={this.hideRemoveSongModal}
                 />
             </React.Fragment>
         );
