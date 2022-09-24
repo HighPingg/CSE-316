@@ -443,7 +443,21 @@ class App extends React.Component {
         // Set state var
         this.toggleDialogOpen(false);
     }
+
+    detectKeyDown = (key) => {
+        if (key.ctrlKey) {
+            if (key.key === 'z' || key.key == 'Z') {
+                this.undo();
+            } else if (key.key === 'y' || key.key == 'Y') {
+                this.redo();
+            }
+        }
+    }
+
     render() {
+        // Event handler for detecting keydowns
+        document.addEventListener("keydown", this.detectKeyDown);
+
         let canAddList = this.state.currentList === null && !this.state.confirmDialogOpen;
         let canAddSong = this.state.currentList !== null && !this.state.confirmDialogOpen;
         let canUndo = this.tps.hasTransactionToUndo() && this.state.currentList !== null && !this.state.confirmDialogOpen;
