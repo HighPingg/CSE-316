@@ -7,6 +7,7 @@ import jsTPS from './common/jsTPS.js';
 
 // OUR TRANSACTIONS
 import MoveSong_Transaction from './transactions/MoveSong_Transaction.js';
+import AddSong_Transaction from './transactions/AddSong_Transaction';
 import EditSong_Transaction from './transactions/EditSong_Transaction';
 
 // THESE REACT COMPONENTS ARE MODALS
@@ -147,8 +148,52 @@ class App extends React.Component {
         if (this.state.currentList) {
             this.setState(prevState => ({
                 currentList: newCurrentList
-            }))
+            }), () => {
+                // UPDATING THE LIST IN PERMANENT STORAGE
+                // IS AN AFTER EFFECT
+                this.db.mutationUpdateList(newCurrentList);
+            });
         }
+    }
+
+    addNewSong = (title, artist, youtubeID) => {
+        let updatedList = Array.from(this.state.currentList.songs)
+        updatedList.push({title: title, artist: artist, youTubeId: youtubeID})
+
+        let newCurrentList = Object.assign({}, this.state.currentList)
+        newCurrentList.songs = updatedList
+
+        if (this.state.currentList) {
+            this.setState(prevState => ({
+                currentList: newCurrentList
+            }), () => {
+                // UPDATING THE LIST IN PERMANENT STORAGE
+                // IS AN AFTER EFFECT
+                this.db.mutationUpdateList(newCurrentList);
+            });
+        }
+    }
+
+    removeSong = (index) => {
+        let updatedList = Array.from(this.state.currentList.songs)
+        updatedList.splice(index, 1)
+
+        let newCurrentList = Object.assign({}, this.state.currentList)
+        newCurrentList.songs = updatedList
+
+        if (this.state.currentList) {
+            this.setState(prevState => ({
+                currentList: newCurrentList
+            }), () => {
+                // UPDATING THE LIST IN PERMANENT STORAGE
+                // IS AN AFTER EFFECT
+                this.db.mutationUpdateList(newCurrentList);
+            });
+        }
+    }
+
+    removeLastSong = () => {
+        this.removeSong(this.state.currentList.songs.length - 1)
     }
 
     renameList = (key, newName) => {
@@ -187,15 +232,18 @@ class App extends React.Component {
     // THIS FUNCTION BEGINS THE PROCESS OF LOADING A LIST FOR EDITING
     loadList = (key) => {
         let newCurrentList = this.db.queryGetList(key);
-        this.setState(prevState => ({
-            listKeyPairMarkedForDeletion : prevState.listKeyPairMarkedForDeletion,
-            currentList: newCurrentList,
-            sessionData: this.state.sessionData
-        }), () => {
-            // AN AFTER EFFECT IS THAT WE NEED TO MAKE SURE
-            // THE TRANSACTION STACK IS CLEARED
-            this.tps.clearAllTransactions();
-        });
+        
+        if (this.state.currentList == null || this.state.currentList == null || this.state.currentList.key != key){
+            this.setState(prevState => ({
+                listKeyPairMarkedForDeletion : prevState.listKeyPairMarkedForDeletion,
+                currentList: newCurrentList,
+                sessionData: this.state.sessionData
+            }), () => {
+                // AN AFTER EFFECT IS THAT WE NEED TO MAKE SURE
+                // THE TRANSACTION STACK IS CLEARED
+                this.tps.clearAllTransactions();
+            });
+        }
     }
     // THIS FUNCTION BEGINS THE PROCESS OF CLOSING THE CURRENT LIST
     closeCurrentList = () => {
@@ -257,6 +305,11 @@ class App extends React.Component {
         let transaction = new EditSong_Transaction(this, index, this.state.currentList.songs[index], newSong);
         this.tps.addTransaction(transaction);
         this.hideEditSongModal()
+    }
+
+    addAddSongTransaction = () => {
+        let transaction = new AddSong_Transaction(this);
+        this.tps.addTransaction(transaction);
     }
 
     // THIS FUNCTION BEGINS THE PROCESS OF PERFORMING AN UNDO
@@ -338,6 +391,7 @@ class App extends React.Component {
                     canUndo={canUndo}
                     canRedo={canRedo}
                     canClose={canClose} 
+                    addSongCallback={this.addAddSongTransaction}
                     undoCallback={this.undo}
                     redoCallback={this.redo}
                     closeCallback={this.closeCurrentList}
@@ -356,7 +410,7 @@ class App extends React.Component {
                 />
                 <EditSongModal
                     songId={this.state.songIdMarkedForEdit}
-                    song={this.state.songIdMarkedForEdit != null ? this.state.currentList.songs[this.state.songIdMarkedForEdit] : null}
+                    song={this.state.currentList != null && this.state.currentList.songs != null ? this.state.currentList.songs[this.state.songIdMarkedForEdit] : null}
                     hideEditSongModalCallback={this.hideEditSongModal}
                     editSongCallback={this.addEditSongTransaction}
                 />
