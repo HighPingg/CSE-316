@@ -41,7 +41,8 @@ class App extends React.Component {
         this.state = {
             listKeyPairMarkedForDeletion : null,
             currentList : null,
-            sessionData : loadedSessionData
+            sessionData : loadedSessionData,
+            confirmDialogOpen : false
         }
     }
     sortKeyNamePairsByName = (keyNamePairs) => {
@@ -328,8 +329,10 @@ class App extends React.Component {
     }
 
     addAddSongTransaction = () => {
-        let transaction = new AddSong_Transaction(this);
-        this.tps.addTransaction(transaction);
+        if (this.state.currentList !== null) {
+            let transaction = new AddSong_Transaction(this);
+            this.tps.addTransaction(transaction);
+        }
     }
 
     addRemoveSongTransaction = (index) => {
@@ -384,42 +387,70 @@ class App extends React.Component {
             this.showRemoveSongModal();
         });
     }
+
+    toggleDialogOpen(isOpen) {
+        this.setState(prevState => ({
+            confirmDialogOpen: isOpen,
+            sessionData: prevState.sessionData
+        }));
+    }
+
     // THIS FUNCTION SHOWS THE MODAL FOR PROMPTING THE USER
     // TO SEE IF THEY REALLY WANT TO DELETE THE LIST
     showDeleteListModal() {
         let modal = document.getElementById("delete-list-modal");
         modal.classList.add("is-visible");
+
+        // Set state var
+        this.toggleDialogOpen(true);
     }
     // THIS FUNCTION IS FOR HIDING THE MODAL
-    hideDeleteListModal() {
+    hideDeleteListModal = (event) => {
         let modal = document.getElementById("delete-list-modal");
         modal.classList.remove("is-visible");
+
+        // Set state var
+        this.toggleDialogOpen(false);
     }
     showEditSongModal() {
         let modal = document.getElementById("edit-song-modal");
         modal.classList.add("is-visible");
+        
+        // Set state var
+        this.toggleDialogOpen(true);
     }
-    hideEditSongModal() {
+    hideEditSongModal = (event) => {
         let modal = document.getElementById("edit-song-modal");
         modal.classList.remove("is-visible");
+
+        // Set state var
+        this.toggleDialogOpen(false);
     }
     showRemoveSongModal() {
         let modal = document.getElementById("remove-song-modal");
         modal.classList.add("is-visible");
+
+        // Set state var
+        this.toggleDialogOpen(true);
     }
-    hideRemoveSongModal() {
+    hideRemoveSongModal = (event) =>  {
         let modal = document.getElementById("remove-song-modal");
         modal.classList.remove("is-visible");
+
+        // Set state var
+        this.toggleDialogOpen(false);
     }
     render() {
-        let canAddSong = this.state.currentList !== null;
-        let canUndo = this.tps.hasTransactionToUndo();
-        let canRedo = this.tps.hasTransactionToRedo();
-        let canClose = this.state.currentList !== null;
+        let canAddList = this.state.currentList === null && !this.state.confirmDialogOpen;
+        let canAddSong = this.state.currentList !== null && !this.state.confirmDialogOpen;
+        let canUndo = this.tps.hasTransactionToUndo() && this.state.currentList !== null && !this.state.confirmDialogOpen;
+        let canRedo = this.tps.hasTransactionToRedo() && this.state.currentList !== null && !this.state.confirmDialogOpen;
+        let canClose = this.state.currentList !== null && !this.state.confirmDialogOpen;
         return (
             <React.Fragment>
                 <Banner />
                 <SidebarHeading
+                    canAddList={canAddList}
                     createNewListCallback={this.createNewList}
                 />
                 <SidebarList
