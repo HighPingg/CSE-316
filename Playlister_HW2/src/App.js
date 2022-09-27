@@ -448,6 +448,7 @@ class App extends React.Component {
         if (key.ctrlKey) {
             if (key.key === 'z' || key.key == 'Z') {
                 this.undo();
+                this.setState()
             } else if (key.key === 'y' || key.key == 'Y') {
                 this.redo();
             }
@@ -455,16 +456,14 @@ class App extends React.Component {
     }
 
     render() {
-        // Event handler for detecting keydowns
-        document.addEventListener("keydown", this.detectKeyDown);
-
         let canAddList = this.state.currentList === null && !this.state.confirmDialogOpen;
         let canAddSong = this.state.currentList !== null && !this.state.confirmDialogOpen;
         let canUndo = this.tps.hasTransactionToUndo() && this.state.currentList !== null && !this.state.confirmDialogOpen;
         let canRedo = this.tps.hasTransactionToRedo() && this.state.currentList !== null && !this.state.confirmDialogOpen;
         let canClose = this.state.currentList !== null && !this.state.confirmDialogOpen;
+
         return (
-            <React.Fragment>
+            <div id='root' onKeyDown={this.detectKeyDown}>
                 <Banner />
                 <SidebarHeading
                     canAddList={canAddList}
@@ -512,7 +511,7 @@ class App extends React.Component {
                     removeSongCallback={this.addRemoveSongTransaction}
                     hideRemoveSongModalCallback={this.hideRemoveSongModal}
                 />
-            </React.Fragment>
+            </div>
         );
     }
 }
