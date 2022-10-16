@@ -43,8 +43,8 @@ const ListSelector = () => {
             </div>                {
                     listCard
                 }
-                <DeleteListModal />
             </div>
+            <DeleteListModal />
         </div>)
 }
 

@@ -13,15 +13,26 @@ function EditToolbar() {
 
     let enabledButtonClass = "playlister-button";
 
+    function handleAddSong() {
+        if (store.currentList) {
+            store.addNewSong();
+        }
+    }
     function handleUndo() {
-        store.undo();
+        if (store.currentList) {
+            store.undo();
+        }
     }
     function handleRedo() {
-        store.redo();
+        if (store.currentList) {
+            store.redo();
+        }
     }
     function handleClose() {
-        history.push("/");
-        store.closeCurrentList();
+        if (store.currentList) {
+            history.push("/");
+            store.closeCurrentList();
+        }
     }
     let editStatus = false;
     if (store.isListNameEditActive) {
@@ -35,6 +46,7 @@ function EditToolbar() {
                 disabled={editStatus}
                 value="+"
                 className={enabledButtonClass}
+                onClick={handleAddSong}
             />
             <input
                 type="button"
