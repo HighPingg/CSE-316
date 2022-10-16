@@ -5,7 +5,7 @@ function EditSongModal() {
     const { store } = useContext(GlobalStoreContext);
     let name = "";
     
-    if (store.currentList && store.songMarkedForEdit) {
+    if (store.currentList && store.songMarkedForEdit != null) {
         let song = store.currentList.songs[store.songMarkedForEdit]
 
         document.getElementById("title-box").value = song.title
