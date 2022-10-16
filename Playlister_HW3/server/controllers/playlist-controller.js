@@ -87,9 +87,58 @@ getPlaylistPairs = async (req, res) => {
     }).catch(err => console.log(err))
 }
 
+updatePlaylistById = async (req, res) => {
+    const body = req.body;
+    console.log("updatePlaylist body: " + body);
+
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a body',
+        })
+    }
+
+    await Playlist.findOne({ _id: req.params.id }, (err, list) => {
+        if (err) {
+            return res.status(400).json({ success: false, error: err })
+        }
+        list.name = body.name
+        list.songs = body.songs
+        list
+            .save()
+            .then(() => {
+                console.log("SUCCESS!!!");
+                return res.status(200).json({
+                    success: true,
+                    id: list._id,
+                    message: 'Playlist updated!',
+                })
+            })
+            .catch(error => {
+                console.log("FAILURE: " + JSON.stringify(error));
+                return res.status(404).json({
+                    error,
+                    message: 'Playlist not updated!',
+                })
+            })
+    }).catch(err => console.log(err))
+}
+
+deletePlaylistById = async (req, res) => {
+    console.log('Deleting Playlist' + req.params._id);
+    await Playlist.findOneAndDelete({ _id: req.params.id }, () => {
+        return res.status(200).json({ success: true});
+    }).catch(err =>  {
+        console.log("error caught: " + err);
+        return res.status(400).json({ success: false })
+    })
+}
+
 module.exports = {
     createPlaylist,
     getPlaylists,
     getPlaylistPairs,
-    getPlaylistById
+    getPlaylistById,
+    updatePlaylistById,
+    deletePlaylistById
 }
