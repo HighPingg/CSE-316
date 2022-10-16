@@ -22,7 +22,7 @@ body {
 
 #root {
   background-color: var(--swatch-primary);
-  font-family: "Lexend Exa";
+  font-family: 'Tangerine', serif;
   position: absolute;
   width: 80%;
   left: 10%;
@@ -49,6 +49,7 @@ body {
   #b8b808, #636723);
   color: white;
   font-size: 48pt;
+  font-weight: 200;
   border-color: black;
   border-width: 2px;
   border-style: solid;
@@ -62,12 +63,43 @@ body {
   float:right;
 }
 
+.toolbar-button {
+  font-size:36pt;
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  box-shadow: 2px 4px #888888;
+  border-radius: 5px;
+  height: 90%;
+  margin-left: 3px;
+  margin-right: 3px;
+}
+
+.banner-button {
+  border-width: 1px;
+  border-color: black;
+  border-style: solid;
+  box-shadow: 2px 4px #888888;
+  border-radius: 5px;
+}
+
 #playlist-selector, #playlist-cards {
+  grid-column: 2 / 3;
+  grid-row: 3 / 4;
+  display: flex;
+  flex-direction: column;
   overflow: scroll;
-  grid-column: 1 / 3;
-  grid-row: 2 / 3;
-  display:grid;
-  background-color: var(--swatch-primary);
+  background-color: var(--swatch-accent);
+  height: 81%;
+}
+
+#playlist-selector-heading {
+  font-size: 32pt;
+  font-weight: bold;
+  margin: 5px;
+  padding: 5px;
+  height: 22.5%;
+  min-height: 32pt;
 }
 
 .playlister-button, .playlister-button-disabled {
@@ -107,7 +139,7 @@ body {
 }
 
 .list-card, .selected-list-card, .unselected-list-card {
-  font-size: 18pt;
+  font-size: 32pt;
   margin: 10px;
   padding: 20px;
   border-radius: 25px;
@@ -235,6 +267,10 @@ input {
 
 .modal-button {
   font-size: 20pt;
+}
+
+.modal-main-text {
+  font-weight: bold;
 }
 
 /* ANIMATIONS

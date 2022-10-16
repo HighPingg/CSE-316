@@ -26,7 +26,7 @@ function DeleteSongModal() {
                     </div>
                     <div className="modal-center">
                         <div className="modal-center-content">
-                            Are you sure you wish to delete {name}?
+                            Are you sure you wish to delete <span className="modal-main-text">{name}</span>?
                         </div>
                     </div>
                     <div className="modal-south">

@@ -34,11 +34,9 @@ function EditSongModal() {
                         Edit Song?
                     </div>
                     <div className="modal-center">
-                        <div className="modal-center-content">
-                            <div className="modal-textfield">Title: </div><input className="modal-textfield" type="text" id="title-box"></input>
-                            <div className="modal-textfield">Artist: </div><input className="modal-textfield" type="text" id="artist-box"></input>
-                            <div className="modal-textfield">You Tube Id: </div><input className="modal-textfield" type="text" id="id-box"></input>
-                        </div>
+                        <div className="modal-textfield">Title: </div><input className="modal-textfield" type="text" id="title-box"></input>
+                        <div className="modal-textfield">Artist: </div><input className="modal-textfield" type="text" id="artist-box"></input>
+                        <div className="modal-textfield">You Tube Id: </div><input className="modal-textfield" type="text" id="id-box"></input>
                     </div>
                     <div className="modal-south">
                         <input type="button" 
