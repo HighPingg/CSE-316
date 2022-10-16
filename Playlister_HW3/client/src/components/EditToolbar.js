@@ -1,6 +1,6 @@
 import { useContext } from 'react'
 import { GlobalStoreContext } from '../store'
-import { useHistory } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 /*
     This toolbar is a functional React component that
     manages the undo/redo/close buttons.
@@ -35,7 +35,7 @@ function EditToolbar() {
         }
     }
     let editStatus = false;
-    if (store.isListNameEditActive) {
+    if (!store.editingPlaylist || store.modalOpen) {
         editStatus = true;
     }
     return (
@@ -51,7 +51,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='undo-button'
-                disabled={editStatus}
+                disabled={editStatus || !store.hasUndo}
                 value="⟲"
                 className={enabledButtonClass}
                 onClick={handleUndo}
@@ -59,7 +59,7 @@ function EditToolbar() {
             <input
                 type="button"
                 id='redo-button'
-                disabled={editStatus}
+                disabled={editStatus || !store.hasRedo}
                 value="⟳"
                 className={enabledButtonClass}
                 onClick={handleRedo}

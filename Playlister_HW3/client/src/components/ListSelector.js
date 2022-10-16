@@ -37,6 +37,7 @@ const ListSelector = () => {
                     type="button"
                     id="add-list-button"
                     onClick={handleCreateNewList}
+                    disabled={store.modalOpen}
                     className="playlister-button"
                     value="+" />
                 Your Lists

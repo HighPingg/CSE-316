@@ -25,7 +25,9 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     MARK_LIST_FOR_DELETION: "MARK_LIST_FOR_DELETION",
     MARK_SONG_FOR_DELETION: "MARK_SONG_FOR_DELETION",
-    MARK_SONG_FOR_EDIT: "MARK_SONG_FOR_EDIT"
+    MARK_SONG_FOR_EDIT: "MARK_SONG_FOR_EDIT",
+    TOGGLE_MODAL_CLOSE: "TOGGLE_MODAL_CLOSE",
+    RELOAD_TRANSACTIONS: "RELOAD_TRANSACTIONS"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -40,8 +42,13 @@ export const useGlobalStore = () => {
         currentList: null,
         newListCounter: 0,
         listNameActive: false,
+        listMarkedForDeletion: null,
         songMarkedForDeletion: null,
-        songMarkedForEdit: null
+        songMarkedForEdit: null,
+        editingPlaylist: false,
+        modalOpen: false,
+        hasUndo: tps.hasTransactionToUndo(),
+        hasRedo: tps.hasTransactionToRedo()
     });
 
     // HERE'S THE DATA STORE'S REDUCER, IT MUST
@@ -56,8 +63,13 @@ export const useGlobalStore = () => {
                     currentList: payload.playlist,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -67,8 +79,13 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: false,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 })
             }
             // CREATE A NEW LIST
@@ -78,8 +95,13 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: true,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -89,19 +111,29 @@ export const useGlobalStore = () => {
                     currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 });
             }
             // PREPARE TO DELETE A LIST
             case GlobalStoreActionType.MARK_LIST_FOR_DELETION: {
                 return setStore({
                     idNamePairs: store.idNamePairs,
-                    currentList: payload,
+                    currentList: null,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: payload,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: true,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 });
             }
             // PREPARE TO DELETE A SONG
@@ -111,8 +143,13 @@ export const useGlobalStore = () => {
                     currentList: store.currentList,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: payload.id,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: true,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 })
             }
             // PREPARE TO EDIT A SONG
@@ -122,8 +159,13 @@ export const useGlobalStore = () => {
                     currentList: store.currentList,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: payload.id
+                    songMarkedForEdit: payload.id,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: true,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 })
             }
             // UPDATE A LIST
@@ -133,8 +175,13 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: false,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: true,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 });
             }
             // START EDITING A LIST NAME
@@ -144,8 +191,45 @@ export const useGlobalStore = () => {
                     currentList: payload,
                     newListCounter: store.newListCounter,
                     listNameActive: true,
+                    listMarkedForDeletion: null,
                     songMarkedForDeletion: null,
-                    songMarkedForEdit: null
+                    songMarkedForEdit: null,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
+                });
+            }
+            // TOGGLE MODAL OPEN VARIABLE
+            case GlobalStoreActionType.TOGGLE_MODAL_CLOSE: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listMarkedForDeletion: store.markListForDeletion,
+                    songMarkedForDeletion: store.songMarkedForDeletion,
+                    songMarkedForEdit: store.songMarkedForEdit,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: false,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
+                });
+            }
+            // TOGGLE MODAL OPEN VARIABLE
+            case GlobalStoreActionType.RELOAD_TRANSACTIONS: {
+                return setStore({
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listMarkedForDeletion: store.markListForDeletion,
+                    songMarkedForDeletion: store.songMarkedForDeletion,
+                    songMarkedForEdit: store.songMarkedForEdit,
+                    editingPlaylist: store.editingPlaylist,
+                    modalOpen: store.modalOpen,
+                    hasUndo: tps.hasTransactionToUndo(),
+                    hasRedo: tps.hasTransactionToRedo()
                 });
             }
             default:
@@ -195,6 +279,8 @@ export const useGlobalStore = () => {
             type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
             payload: {}
         });
+
+        tps.clearAllTransactions();
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -300,7 +386,7 @@ export const useGlobalStore = () => {
                 store.history.push('/')
             }
         }
-        deleteList(store.currentList._id);
+        deleteList(store.listMarkedForDeletion._id);
         store.hideDeleteListModal();
     }
     store.showDeleteListModal = function() {
@@ -310,6 +396,11 @@ export const useGlobalStore = () => {
     store.hideDeleteListModal = function() {
         let modal = document.getElementById("delete-list-modal");
         modal.classList.remove("is-visible");
+    
+        storeReducer({
+            type: GlobalStoreActionType.TOGGLE_MODAL_CLOSE,
+            payload: {}
+        })
     }
 
     store.addNewSongTransaction = function () {
@@ -443,6 +534,11 @@ export const useGlobalStore = () => {
     store.hideDeleteSongModal = function() {
         let modal = document.getElementById("delete-song-modal");
         modal.classList.remove("is-visible");
+
+        storeReducer({
+            type: GlobalStoreActionType.TOGGLE_MODAL_CLOSE,
+            payload: {}
+        })
     }
 
 
@@ -506,6 +602,11 @@ export const useGlobalStore = () => {
     store.hideEditSongModal = function() {
         let modal = document.getElementById("edit-song-modal");
         modal.classList.remove("is-visible");
+
+        storeReducer({
+            type: GlobalStoreActionType.TOGGLE_MODAL_CLOSE,
+            payload: {}
+        })
     }
 
     store.moveSongTransaction = function (targetId, sourceId) {

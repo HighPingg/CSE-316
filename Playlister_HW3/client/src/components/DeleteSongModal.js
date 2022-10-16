@@ -5,7 +5,7 @@ function DeleteSongModal() {
     const { store } = useContext(GlobalStoreContext);
     let name = "";
     
-    if (store.currentList && store.songMarkedForDeletion) {
+    if (store.currentList && store.songMarkedForDeletion != null) {
         name = store.currentList.songs[store.songMarkedForDeletion].title;
     }
     function handleDeleteSong(event) {
