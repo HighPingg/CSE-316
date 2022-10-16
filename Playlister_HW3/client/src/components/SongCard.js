@@ -29,7 +29,7 @@ function SongCard(props) {
         let sourceId = event.dataTransfer.getData("song");
         sourceId = sourceId.split('-')[1];
 
-        store.moveSong(targetId, sourceId);
+        store.moveSongTransaction(targetId, sourceId);
     }
 
     function handleDeleteSong(event) {

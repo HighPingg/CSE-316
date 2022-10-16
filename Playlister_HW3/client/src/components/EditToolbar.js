@@ -15,7 +15,7 @@ function EditToolbar() {
 
     function handleAddSong() {
         if (store.currentList) {
-            store.addNewSong();
+            store.addNewSongTransaction();
         }
     }
     function handleUndo() {

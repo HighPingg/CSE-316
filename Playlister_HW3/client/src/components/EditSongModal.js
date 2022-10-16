@@ -9,7 +9,7 @@ function EditSongModal() {
         let song = store.currentList.songs[store.songMarkedForEdit]
 
         document.getElementById("title-box").value = song.title
-        document.getElementById("artist-box").value = song.author
+        document.getElementById("artist-box").value = song.artist
         document.getElementById("id-box").value = song.youTubeId
     }
     function handleEditSong(event) {

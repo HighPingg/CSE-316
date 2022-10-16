@@ -1,6 +1,11 @@
 import { createContext, useState } from 'react'
 import jsTPS from '../common/jsTPS'
 import api from '../api'
+import AddSong_Transaction from '../transactions/AddSong_Transaction';
+import EditSong_Transaction from '../transactions/EditSong_Transaction';
+import MoveSong_Transaction from '../transactions/MoveSong_Transaction';
+import RemoveSong_Transaction from '../transactions/RemoveSong_Transaction';
+
 export const GlobalStoreContext = createContext({});
 /*
     This is our global data store. Note that it uses the Flux design pattern,
@@ -231,10 +236,14 @@ export const useGlobalStore = () => {
         return store.currentList.songs.length;
     }
     store.undo = function () {
-        tps.undoTransaction();
+        if (tps.hasTransactionToUndo) {
+            tps.undoTransaction();
+        }
     }
     store.redo = function () {
-        tps.doTransaction();
+        if (tps.hasTransactionToRedo) {
+            tps.doTransaction();
+        }
     }
 
     // THIS FUNCTION ENABLES THE PROCESS OF EDITING A LIST NAME
@@ -303,10 +312,15 @@ export const useGlobalStore = () => {
         modal.classList.remove("is-visible");
     }
 
-    store.addNewSong = function() {
+    store.addNewSongTransaction = function () {
+        let transaction = new AddSong_Transaction(store);
+        tps.addTransaction(transaction);
+    }
+
+    store.addNewSong = function(title, artist, youtubeID) {
         // Copy current songs list and append new song to end
         let updatedList = Array.from(store.currentList.songs)
-        updatedList.push({title: 'Untitled', artist: 'Unknown', youTubeId: 'dQw4w9WgXcQ'})
+        updatedList.push({title: title, artist: artist, youTubeId: youtubeID})
 
         let newCurrentList = Object.assign({}, store.currentList)
         newCurrentList.songs = updatedList
@@ -331,6 +345,10 @@ export const useGlobalStore = () => {
             }
         }
         updateList(newCurrentList);
+    }
+
+    store.deleteLastSong = function () {
+        store.deleteSong(store.currentList.songs.length);
     }
 
     store.markSongForDeletion = function (index) {
@@ -343,9 +361,17 @@ export const useGlobalStore = () => {
     }
 
     store.deleteMarkedSong = function () {
+        let song = store.currentList.songs[store.songMarkedForDeletion];
+        let transaction = new RemoveSong_Transaction(store, store.songMarkedForDeletion, song);
+        tps.addTransaction(transaction);
+
+        store.hideDeleteSongModal();
+    }
+
+    store.deleteSong = function (index) {
         // Copy current songs list and append new song to end
         let updatedList = Array.from(store.currentList.songs)
-        updatedList.splice(store.songMarkedForDeletion, 1)
+        updatedList.splice(index, 1)
 
         let newCurrentList = Object.assign({}, store.currentList)
         newCurrentList.songs = updatedList
@@ -370,7 +396,44 @@ export const useGlobalStore = () => {
             }
         }
         updateList(newCurrentList);
-        store.hideDeleteSongModal();
+    }
+
+    store.insertSong = function(index, song) {
+        // Copy current songs list and append new song to end
+        async function getPlaylists() {
+            let response = await api.getPlaylistById(store.currentList._id);
+            if (response.data.success) {
+                let updatedList = response.data.playlist.songs;
+                updatedList.splice(index, 0, song);
+
+                console.log(updatedList)
+
+                let newCurrentList = response.data.playlist
+                newCurrentList.songs = updatedList
+
+                async function updateList(playlist) {
+                    let response = await api.updatePlaylistById(playlist._id, playlist);
+                    if (response.data.success) {
+                        async function getListPairs(playlist) {
+                            response = await api.getPlaylistPairs();
+                            if (response.data.success) {
+                                let pairsArray = response.data.idNamePairs;
+                                storeReducer({
+                                    type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                    payload: {
+                                        idNamePairs: pairsArray,
+                                        playlist: playlist
+                                    }
+                                });
+                            }
+                        }
+                        getListPairs(playlist);
+                    }
+                }
+                updateList(newCurrentList);
+            }
+        }
+        getPlaylists();
     }
 
     store.showDeleteSongModal = function() {
@@ -393,34 +456,47 @@ export const useGlobalStore = () => {
     }
 
     store.editMarkedSong = function (newSong) {
-        // Copy current songs list and append new song to end
-        let updatedList = Array.from(store.currentList.songs)
-        updatedList.splice(store.songMarkedForEdit, 1, newSong)
+        let oldSong = store.currentList.songs[store.songMarkedForEdit];
+        let transaction = new EditSong_Transaction(store, store.songMarkedForEdit, oldSong, newSong);
+        tps.addTransaction(transaction);
 
-        let newCurrentList = Object.assign({}, store.currentList)
-        newCurrentList.songs = updatedList
+        store.hideEditSongModal();
+    }
 
-        async function updateList(playlist) {
-            let response = await api.updatePlaylistById(playlist._id, playlist);
+    store.updateSong = function(index, song) {
+        async function getPlaylists() {
+            let response = await api.getPlaylistById(store.currentList._id);
             if (response.data.success) {
-                async function getListPairs(playlist) {
-                    response = await api.getPlaylistPairs();
+                // Copy current songs list and append new song to end
+                let updatedList = response.data.playlist.songs;
+                updatedList.splice(index, 1, song);
+
+                let newCurrentList = response.data.playlist
+                newCurrentList.songs = updatedList
+
+                async function updateList(playlist) {
+                    let response = await api.updatePlaylistById(playlist._id, playlist);
                     if (response.data.success) {
-                        let pairsArray = response.data.idNamePairs;
-                        storeReducer({
-                            type: GlobalStoreActionType.CHANGE_LIST_NAME,
-                            payload: {
-                                idNamePairs: pairsArray,
-                                playlist: playlist
+                        async function getListPairs(playlist) {
+                            response = await api.getPlaylistPairs();
+                            if (response.data.success) {
+                                let pairsArray = response.data.idNamePairs;
+                                storeReducer({
+                                    type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                    payload: {
+                                        idNamePairs: pairsArray,
+                                        playlist: playlist
+                                    }
+                                });
                             }
-                        });
+                        }
+                        getListPairs(playlist);
                     }
                 }
-                getListPairs(playlist);
+                updateList(newCurrentList);
             }
         }
-        updateList(newCurrentList);
-        store.hideEditSongModal();
+        getPlaylists();
     }
 
     store.showEditSongModal = function() {
@@ -432,37 +508,46 @@ export const useGlobalStore = () => {
         modal.classList.remove("is-visible");
     }
 
+    store.moveSongTransaction = function (targetId, sourceId) {
+        let transaction = new MoveSong_Transaction(store, sourceId, targetId);
+        tps.addTransaction(transaction);
+    }
+
     store.moveSong = function (targetId, sourceId) {
-        // Copy current songs list and append new song to end
-        let updatedList = Array.from(store.currentList.songs);
-        let songToMove = updatedList[sourceId]
-
-        updatedList.splice(sourceId, 1)
-        updatedList.splice(targetId, 0, songToMove)
-        
-        let newCurrentList = Object.assign({}, store.currentList);
-        newCurrentList.songs = updatedList
-
-        async function updateList(playlist) {
-            let response = await api.updatePlaylistById(playlist._id, playlist);
+        async function getPlaylists() {
+            let response = await api.getPlaylistById(store.currentList._id);
             if (response.data.success) {
-                async function getListPairs(playlist) {
-                    response = await api.getPlaylistPairs();
+                // Copy current songs list and append new song to end
+                let updatedList = response.data.playlist.songs;
+                updatedList.splice(targetId, 0, updatedList.splice(sourceId, 1)[0]);
+
+                let newCurrentList = response.data.playlist;
+                newCurrentList.songs = updatedList
+
+                async function updateList(playlist) {
+                    let response = await api.updatePlaylistById(playlist._id, playlist);
                     if (response.data.success) {
-                        let pairsArray = response.data.idNamePairs;
-                        storeReducer({
-                            type: GlobalStoreActionType.CHANGE_LIST_NAME,
-                            payload: {
-                                idNamePairs: pairsArray,
-                                playlist: playlist
+                        async function getListPairs(playlist) {
+                            response = await api.getPlaylistPairs();
+                            if (response.data.success) {
+                                let pairsArray = response.data.idNamePairs;
+                                storeReducer({
+                                    type: GlobalStoreActionType.CHANGE_LIST_NAME,
+                                    payload: {
+                                        idNamePairs: pairsArray,
+                                        playlist: playlist
+                                    }
+                                });
                             }
-                        });
+                        }
+                        getListPairs(playlist);
                     }
                 }
-                getListPairs(playlist);
+                updateList(newCurrentList);
             }
         }
-        updateList(newCurrentList);
+
+        getPlaylists();
     }
 
     // THIS GIVES OUR STORE AND ITS REDUCER TO ANY COMPONENT THAT NEEDS IT
