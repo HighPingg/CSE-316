@@ -40,7 +40,7 @@ const ListSelector = () => {
                     disabled={store.modalOpen}
                     className="playlister-button banner-button"
                     value="+" />
-                Your Lists
+                <span style={{marginLeft: '10px'}}>Your Lists</span>
             </div>                {
                     listCard
                 }

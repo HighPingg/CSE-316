@@ -11,7 +11,7 @@ function EditToolbar() {
     const { store } = useContext(GlobalStoreContext);
     const history = useHistory();
 
-    let enabledButtonClass = "playlister-button toolbar-button";
+    let enabledButtonClass = "playlister-button";
 
     function handleAddSong() {
         if (store.currentList) {

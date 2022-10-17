@@ -22,7 +22,7 @@ body {
 
 #root {
   background-color: var(--swatch-primary);
-  font-family: 'Tangerine', serif;
+  font-family: "Lexend Exa";
   position: absolute;
   width: 80%;
   left: 10%;
@@ -61,18 +61,12 @@ body {
   grid-row: 1 / 2;
   background-color: transparent;
   float:right;
+  height: fit-content;
+  display: flex;
 }
 
-.toolbar-button {
-  font-size:36pt;
-  border-width: 1px;
-  border-color: black;
-  border-style: solid;
-  box-shadow: 2px 4px #888888;
-  border-radius: 5px;
-  height: 90%;
-  margin-left: 3px;
-  margin-right: 3px;
+#add-song-button, #undo-button, #redo-button, #close-button {
+  font-size: 48pt;
 }
 
 .banner-button {
@@ -89,26 +83,27 @@ body {
   display: flex;
   flex-direction: column;
   overflow: scroll;
-  background-color: var(--swatch-accent);
+  background-color: var(--swatch-primary);
   height: 81%;
 }
 
 #playlist-selector-heading {
-  font-size: 32pt;
+  font-size: 26pt;
   font-weight: bold;
   margin: 5px;
   padding: 5px;
-  height: 15%;
+  height: 26pt;
   min-height: 32pt;
 }
 
 .playlister-button, .playlister-button-disabled {
-  font-size:36pt;
+  font-size:28pt;
   border-width: 0px;
   float:left;
   color: black;
   cursor: pointer;
   opacity: 100%;
+  border-radius: 5px;
 }
 
 .playlister-button:hover {
@@ -139,7 +134,7 @@ body {
 }
 
 .list-card, .selected-list-card, .unselected-list-card {
-  font-size: 32pt;
+  font-size: 18pt;
   margin: 10px;
   padding: 20px;
   border-radius: 25px;
@@ -167,8 +162,12 @@ body {
   background-color: var(--swatch-complement);
 }
 
+.list-card-button-containder {
+  float: right;
+  display: flex;
+}
+
 .list-card-button {
-  float:right;
   font-size:18pt;
 }
 
@@ -210,7 +209,7 @@ input {
 
 .modal-root {
   position: relative;
-  max-width: 1200vw;
+  max-width: 80%;
   max-height: 600vh;
   overflow: visible;
   display: flex;
@@ -236,10 +235,10 @@ input {
 
 .modal-center {
   display: grid;
-  grid-template-columns: 30% 65%;
+  grid-template-columns: 40% 60%;
   grid-template-rows: 33% 33% 33%;
   gap: 10px 20px;
-  font-size: 48pt;
+  font-size: 36pt;
   height: fit-content;
 }
 
@@ -263,10 +262,14 @@ input {
 
 .modal-textfield {
   font-size:28pt;
+  white-space: nowrap;
+  width: fit-content;
 }
 
 .modal-button {
   font-size: 20pt;
+  margin-left: 20px;
+  margin-right: 20px;
 }
 
 .modal-main-text {

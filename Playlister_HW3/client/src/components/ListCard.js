@@ -75,22 +75,24 @@ function ListCard(props) {
                 className="list-card-text">
                 {idNamePair.name}
             </span>
-            <input
-                disabled={cardStatus}
-                type="button"
-                id={"delete-list-" + idNamePair._id}
-                className="list-card-button"
-                value={"🗑"}
-                onClick={handleDeleteList}
-            />
-            <input
-                disabled={cardStatus}
-                type="button"
-                id={"edit-list-" + idNamePair._id}
-                className="list-card-button"
-                onClick={handleToggleEdit}
-                value={"\u270E"}
-            />
+            <div className='list-card-button-containder'>
+                <input
+                    disabled={cardStatus}
+                    type="button"
+                    id={"edit-list-" + idNamePair._id}
+                    className="list-card-button"
+                    onClick={handleToggleEdit}
+                    value={"\u270E"}
+                />
+                <input
+                    disabled={cardStatus}
+                    type="button"
+                    id={"delete-list-" + idNamePair._id}
+                    className="list-card-button"
+                    value={"🗑"}
+                    onClick={handleDeleteList}
+                />
+            </div>
         </div>;
 
     if (editActive) {
