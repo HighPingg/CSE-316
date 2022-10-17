@@ -14,12 +14,24 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
+    let detectKeyDown = function (key) {
+        if (key.ctrlKey) {
+            if (key.key === 'z' || key.key == 'Z') {
+                store.undo();
+            } else if (key.key === 'y' || key.key == 'Y') {
+                store.redo();
+            }
+        }
+    }
+
     if (store.currentList === null) {
         store.history.push('/');
         return null;
     } else {
         return (
-            <div id="playlist-cards">
+            <div id="playlist-cards"
+                 onKeyDown={detectKeyDown}
+                 tabIndex='0'>
             {
                 store.currentList.songs.map((song, index) => (
                     <SongCard
