@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import { useHistory } from 'react-router-dom'
 import SongCard from './SongCard.js'
 import { GlobalStoreContext } from '../store'
@@ -14,15 +14,23 @@ function PlaylistCards() {
     const { store } = useContext(GlobalStoreContext);
     store.history = useHistory();
 
-    let detectKeyDown = function (key) {
-        if (key.ctrlKey) {
-            if (key.key === 'z' || key.key == 'Z') {
+    const handleKeyPress = useCallback((event) => {
+        if (event.ctrlKey) {
+            if (event.key === 'z' || event.key == 'Z') {
                 store.undo();
-            } else if (key.key === 'y' || key.key == 'Y') {
+            } else if (event.key === 'y' || event.key == 'Y') {
                 store.redo();
             }
         }
-    }
+    }, []);
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyPress);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [handleKeyPress])
 
     if (store.currentList === null) {
         store.history.push('/');
@@ -30,7 +38,6 @@ function PlaylistCards() {
     } else {
         return (
             <div id="playlist-cards"
-                 onKeyDown={detectKeyDown}
                  tabIndex='0'>
             {
                 store.currentList.songs.map((song, index) => (
