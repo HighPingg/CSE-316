@@ -270,7 +270,12 @@ export const useGlobalStore = () => {
                 updateList(playlist);
             }
         }
-        asyncChangeListName(id);
+
+        if (newName == '') {
+            store.loadIdNamePairs();
+        } else {
+            asyncChangeListName(id);
+        }
     }
 
     // THIS FUNCTION PROCESSES CLOSING THE CURRENTLY LOADED LIST
