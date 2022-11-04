@@ -35,7 +35,7 @@ const HomeScreen = () => {
                     />
                 ))
             }
-            </List>;
+            </List>
     }
     return (
         <div id="playlist-selector">

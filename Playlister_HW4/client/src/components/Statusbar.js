@@ -10,13 +10,18 @@ import { Typography } from '@mui/material'
 function Statusbar() {
     const { store } = useContext(GlobalStoreContext);
     let text ="";
-    if (store.currentList)
+    if (store.currentList) {
         text = store.currentList.name;
-    return (
-        <div id="playlister-statusbar">
-            <Typography variant="h4">{text}</Typography>
-        </div>
-    );
+
+        return (
+            <div id="playlister-statusbar" >
+                <Typography variant="h4">{text}</Typography>
+            </div>
+        );
+    }
+    else {
+        return null;
+    }
 }
 
 export default Statusbar;
