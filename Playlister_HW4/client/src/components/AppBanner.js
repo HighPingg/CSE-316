@@ -29,6 +29,7 @@ export default function AppBanner() {
     };
 
     const handleLogout = () => {
+        store.clearTransactions();
         handleMenuClose();
         auth.logoutUser();
     }
@@ -101,7 +102,13 @@ export default function AppBanner() {
                         component="div"
                         sx={{ display: { xs: 'none', sm: 'block' } }}                        
                     >
-                        <Link style={{ textDecoration: 'none', color: 'white' }} to='/'>⌂</Link>
+                        <IconButton
+                            size="large"
+                            style={{ textDecoration: 'none', color: 'white' }}
+                            onClick={() => store.closeCurrentList()}
+                        >
+                            ⌂
+                        </IconButton>
                     </Typography>
                     <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
