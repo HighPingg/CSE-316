@@ -10,11 +10,14 @@ export const AuthActionType = {
     GET_LOGGED_IN: "GET_LOGGED_IN",
     LOGIN_USER: "LOGIN_USER",
     LOGOUT_USER: "LOGOUT_USER",
-    REGISTER_USER: "REGISTER_USER"
+    REGISTER_USER: "REGISTER_USER",
+    ACCOUNT_FAILURE: "ACCOUNT_FAILURE",
+    ACKNOWLEDGED_FAILURE: "ACKNOWLEDGED_FAILURE"
 }
 
 function AuthContextProvider(props) {
     const [auth, setAuth] = useState({
+        errorMsg: null,
         user: null,
         loggedIn: false
     });
@@ -51,6 +54,16 @@ function AuthContextProvider(props) {
                     loggedIn: true
                 })
             }
+            case AuthActionType.ACCOUNT_FAILURE: {
+                return setAuth({
+                    errorMsg: payload
+                })
+            }
+            case AuthActionType.ACKNOWLEDGED_FAILURE: {
+                return setAuth({
+                    errorMsg: null
+                })
+            }
             default:
                 return auth;
         }
@@ -70,29 +83,49 @@ function AuthContextProvider(props) {
     }
 
     auth.registerUser = async function(firstName, lastName, email, password, passwordVerify) {
-        const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);      
-        if (response.status === 200) {
+        try {
+            const response = await api.registerUser(firstName, lastName, email, password, passwordVerify);      
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.REGISTER_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+            }
+        } catch (e) {
             authReducer({
-                type: AuthActionType.REGISTER_USER,
-                payload: {
-                    user: response.data.user
-                }
+                type: AuthActionType.ACCOUNT_FAILURE,
+                payload: e.response.data.errorMessage
             })
-            history.push("/");
         }
     }
 
     auth.loginUser = async function(email, password) {
-        const response = await api.loginUser(email, password);
-        if (response.status === 200) {
+        try {
+            const response = await api.loginUser(email, password);
+            if (response.status === 200) {
+                authReducer({
+                    type: AuthActionType.LOGIN_USER,
+                    payload: {
+                        user: response.data.user
+                    }
+                })
+                history.push("/");
+            }
+        } catch (e) {
             authReducer({
-                type: AuthActionType.LOGIN_USER,
-                payload: {
-                    user: response.data.user
-                }
+                type: AuthActionType.ACCOUNT_FAILURE,
+                payload: e.response.data.errorMessage
             })
-            history.push("/");
         }
+    }
+
+    auth.acknowledgedError = function() {
+        authReducer({
+            type: AuthActionType.ACKNOWLEDGED_FAILURE
+        })
     }
 
     auth.logoutUser = async function() {

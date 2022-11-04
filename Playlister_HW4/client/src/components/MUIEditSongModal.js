@@ -87,7 +87,7 @@ export default function MUIEditSongModal() {
                         defaultValue={youTubeId} 
                         onChange={handleUpdateYouTubeId} />
                 </div>
-                <div className="confirm-cancel-container">
+                <div id="confirm-cancel-container">
                     <input 
                         type="button" 
                         id="edit-song-confirm-button" 

@@ -54,7 +54,7 @@ export default function MUIRemoveSongModal() {
                                 Are you sure you wish to permanently remove {songTitle} from the playlist?
                             </div>
                         </div>
-                        <div className="confirm-cancel-container">
+                        <div id="confirm-cancel-container">
                             <input type="button" 
                                 id="remove-song-confirm-button" 
                                 className="modal-button" 
