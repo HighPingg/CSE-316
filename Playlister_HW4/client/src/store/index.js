@@ -260,8 +260,13 @@ function GlobalStoreContextProvider(props) {
         history.push('/');
     }
     store.clearTransactions = function () {
-        if (store.currentList !== null)
+        if (store.currentList !== null) {
+            storeReducer({
+                type: GlobalStoreActionType.CLOSE_CURRENT_LIST,
+                payload: {}
+            });
             tps.clearAllTransactions();
+        }
     }
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
