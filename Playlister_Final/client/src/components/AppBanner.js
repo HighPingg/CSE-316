@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom'
 import AuthContext from '../auth';
 import { GlobalStoreContext } from '../store'
 
+import Logo from './assets/s3.png'
+
 import EditToolbar from './EditToolbar'
 
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -94,7 +96,8 @@ export default function AppBanner() {
 
     return (
         <Box sx={{ flexGrow: 1 }}>
-            <AppBar position="static">
+            <AppBar position="static"
+                    style={{background: '#404eed'}}>
                 <Toolbar>
                     <Typography                        
                         variant="h4"
@@ -102,13 +105,9 @@ export default function AppBanner() {
                         component="div"
                         sx={{ display: { xs: 'none', sm: 'block' } }}                        
                     >
-                        <IconButton
-                            size="large"
-                            style={{ textDecoration: 'none', color: 'white' }}
-                            onClick={() => store.closeCurrentList()}
-                        >
-                            ⌂
-                        </IconButton>
+                    <img src={Logo}
+                         style={{height: "50px"}}
+                         onClick={() => store.closeCurrentList()}/>
                     </Typography>
                     <Box sx={{ flexGrow: 1 }}>{editToolbar}</Box>
                     <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
