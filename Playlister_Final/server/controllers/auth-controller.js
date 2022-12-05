@@ -96,9 +96,9 @@ logoutUser = async (req, res) => {
 
 registerUser = async (req, res) => {
     try {
-        const { firstName, lastName, email, password, passwordVerify } = req.body;
-        console.log("create user: " + firstName + " " + lastName + " " + email + " " + password + " " + passwordVerify);
-        if (!firstName || !lastName || !email || !password || !passwordVerify) {
+        const { firstName, lastName, email, username, password, passwordVerify } = req.body;
+        console.log("create user: " + firstName + " " + lastName + " " + email + " " + username + " " + password + " " + passwordVerify);
+        if (!firstName || !lastName || !email || !username || !password || !passwordVerify) {
             return res
                 .status(400)
                 .json({ errorMessage: "Please enter all required fields." });
@@ -131,13 +131,24 @@ registerUser = async (req, res) => {
                 })
         }
 
+        const existingUser2 = await User.findOne({ username: username });
+        console.log("existingUser: " + existingUser2);
+        if (existingUser2) {
+            return res
+                .status(400)
+                .json({
+                    success: false,
+                    errorMessage: "An account with this username already exists."
+                })
+        }
+
         const saltRounds = 10;
         const salt = await bcrypt.genSalt(saltRounds);
         const passwordHash = await bcrypt.hash(password, salt);
         console.log("passwordHash: " + passwordHash);
 
         const newUser = new User({
-            firstName, lastName, email, passwordHash
+            firstName, lastName, email, username, passwordHash
         });
         const savedUser = await newUser.save();
         console.log("new user saved: " + savedUser._id);
@@ -155,7 +166,8 @@ registerUser = async (req, res) => {
             user: {
                 firstName: savedUser.firstName,
                 lastName: savedUser.lastName,  
-                email: savedUser.email              
+                email: savedUser.email,
+                username: savedUser.username
             }
         })
 
