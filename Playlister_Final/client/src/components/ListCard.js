@@ -74,30 +74,32 @@ function ListCard(props) {
         cardStatus = true;
     }
     let cardElement =
-        <ListItem
-            id={idNamePair._id}
-            key={idNamePair._id}
-            sx={{ marginTop: '15px', display: 'flex', p: 1 }}
-            style={{ width: '100%', fontSize: '36pt' }}
-            button
-            onClick={(event) => {
-                handleLoadList(event, idNamePair._id)
-            }}
-        >
-            <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton onClick={handleToggleEdit} aria-label='edit'>
-                    <EditIcon style={{fontSize:'36pt'}} />
-                </IconButton>
-            </Box>
-            <Box sx={{ p: 1 }}>
-                <IconButton onClick={(event) => {
-                        handleDeleteList(event, idNamePair._id)
-                    }} aria-label='delete'>
-                    <DeleteIcon style={{fontSize:'36pt'}} />
-                </IconButton>
-            </Box>
-        </ListItem>
+        <Box style={{backgroundColor: 'white', borderRadius: '20px'}}>
+            <ListItem
+                id={idNamePair._id}
+                key={idNamePair._id}
+                sx={{ marginTop: '15px', display: 'flex', p: 1 }}
+                style={{ height: 'fit-content', width: '100%', fontSize: '15pt', backgroundColor: 'background.paper', borderRadius: '20px' }}
+                button
+                onClick={(event) => {
+                    handleLoadList(event, idNamePair._id)
+                }}
+            >
+                <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
+                <Box sx={{ p: 1 }}>
+                    <IconButton onClick={handleToggleEdit} aria-label='edit'>
+                        <EditIcon style={{fontSize:'15pt'}} />
+                    </IconButton>
+                </Box>
+                <Box sx={{ p: 1 }}>
+                    <IconButton onClick={(event) => {
+                            handleDeleteList(event, idNamePair._id)
+                        }} aria-label='delete'>
+                        <DeleteIcon style={{fontSize:'15pt'}} />
+                    </IconButton>
+                </Box>
+            </ListItem>
+        </Box>
 
     if (editActive) {
         cardElement =

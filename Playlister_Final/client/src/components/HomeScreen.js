@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
 import MUIDeleteModal from './MUIDeleteModal'
+import NavigationBar from './NavigationBar'
+import { Select } from '@mui/material'
 
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab'
@@ -25,7 +27,7 @@ const HomeScreen = () => {
     let listCard = "";
     if (store) {
         listCard = 
-            <List sx={{ width: '90%', left: '5%', bgcolor: 'background.paper' }}>
+            <List sx={{ height: '100%', width: '100%' }}>
             {
                 store.idNamePairs.map((pair) => (
                     <ListCard
@@ -39,23 +41,29 @@ const HomeScreen = () => {
     }
     return (
         <div id="playlist-selector">
+            <NavigationBar />
+            <div id="content-container">
+                <div id="list-selector-list">
+                    {
+                        listCard
+                    }
+                </div>
+            </div>
+                
             <div id="list-selector-heading">
-            <Fab 
-                color="primary" 
-                aria-label="add"
-                id="add-list-button"
-                onClick={handleCreateNewList}
-            >
-                <AddIcon />
-            </Fab>
-                <Typography variant="h2">Your Lists</Typography>
+                <Fab 
+                    size='small'
+                    color="primary" 
+                    aria-label="add"
+                    id="add-list-button"
+                    onClick={handleCreateNewList}
+                    style={{marginRight: '10px'}}
+                >
+                    <AddIcon />
+                </Fab>
+                <Typography variant="h2" style={{fontSize: '25pt', fontWeight: 'bold'}}>Your Lists</Typography>
             </div>
-            <div id="list-selector-list">
-                {
-                    listCard
-                }
-                <MUIDeleteModal />
-            </div>
+            <MUIDeleteModal />
         </div>)
 }
 
