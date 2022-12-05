@@ -18,33 +18,18 @@ const style = {
 
 export default function MUIEditSongModal() {
     const { store } = useContext(GlobalStoreContext);
-    const [ title, setTitle ] = useState(store.currentSong.title);
-    const [ artist, setArtist ] = useState(store.currentSong.artist);
-    const [ youTubeId, setYouTubeId ] = useState(store.currentSong.youTubeId);
 
     function handleConfirmEditSong() {
         let newSongData = {
-            title: title,
-            artist: artist,
-            youTubeId: youTubeId
+            title: document.getElementById("edit-song-modal-title-textfield").value,
+            artist: document.getElementById("edit-song-modal-artist-textfield").value,
+            youTubeId: document.getElementById("edit-song-modal-youTubeId-textfield").value
         };
         store.addUpdateSongTransaction(store.currentSongIndex, newSongData);        
     }
 
     function handleCancelEditSong() {
         store.hideModals();
-    }
-
-    function handleUpdateTitle(event) {
-        setTitle(event.target.value);
-    }
-
-    function handleUpdateArtist(event) {
-        setArtist(event.target.value);
-    }
-
-    function handleUpdateYouTubeId(event) {
-        setYouTubeId(event.target.value);
     }
 
     return (
@@ -67,25 +52,25 @@ export default function MUIEditSongModal() {
                     className="modal-center">
                     <div id="title-prompt" className="modal-prompt">Title:</div>
                     <input 
-                        id="edit-song-modal-title-textfield" 
+                        id="edit-song-modal-title-textfield"
                         className='modal-textfield' 
                         type="text" 
-                        defaultValue={title} 
-                        onChange={handleUpdateTitle} />
+                        defaultValue={store.currentSong != null ? store.currentSong.title : ''}
+                         />
                     <div id="artist-prompt" className="modal-prompt">Artist:</div>
                     <input 
                         id="edit-song-modal-artist-textfield" 
                         className='modal-textfield' 
                         type="text" 
-                        defaultValue={artist} 
-                        onChange={handleUpdateArtist} />
+                        defaultValue={store.currentSong != null ? store.currentSong.artist : ''} 
+                        />
                     <div id="you-tube-id-prompt" className="modal-prompt">You Tube Id:</div>
                     <input 
                         id="edit-song-modal-youTubeId-textfield" 
                         className='modal-textfield' 
                         type="text" 
-                        defaultValue={youTubeId} 
-                        onChange={handleUpdateYouTubeId} />
+                        defaultValue={store.currentSong != null ? store.currentSong.youTubeId : ''} 
+                    />
                 </div>
                 <div id="confirm-cancel-container">
                     <input 

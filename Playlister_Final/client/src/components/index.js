@@ -1,5 +1,4 @@
 import AppBanner from './AppBanner'
-import EditToolbar from './EditToolbar'
 import HomeScreen from './HomeScreen'
 import HomeWrapper from './HomeWrapper'
 import ListCard from './ListCard'
@@ -10,7 +9,6 @@ import MUIRemoveSongModal from './MUIRemoveSongModal'
 import RegisterScreen from './RegisterScreen'
 import SongCard from './SongCard'
 import SplashScreen from './SplashScreen'
-import Statusbar from './Statusbar'
 import WorkspaceScreen from './WorkspaceScreen'
 import MUIAccountErrorModal from './MUIAccountErrorModal'
 import NavigationBar from './NavigationBar'
@@ -22,7 +20,6 @@ import NavigationBar from './NavigationBar'
 */
 export { 
     AppBanner,  
-    EditToolbar, 
     HomeScreen,
     HomeWrapper,
     ListCard, 
@@ -34,6 +31,5 @@ export {
     SongCard,
     RegisterScreen,
     SplashScreen,
-    Statusbar, 
     WorkspaceScreen,
     NavigationBar }

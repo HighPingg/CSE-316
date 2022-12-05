@@ -2,6 +2,8 @@ import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
 import ListCard from './ListCard.js'
 import MUIDeleteModal from './MUIDeleteModal'
+import MUIEditSongModal from './MUIEditSongModal'
+import MUIRemoveSongModal from './MUIRemoveSongModal'
 import NavigationBar from './NavigationBar'
 import { Select } from '@mui/material'
 
@@ -64,6 +66,8 @@ const HomeScreen = () => {
                 <Typography variant="h2" style={{fontSize: '25pt', fontWeight: 'bold'}}>Your Lists</Typography>
             </div>
             <MUIDeleteModal />
+            <MUIEditSongModal />
+            <MUIRemoveSongModal />
         </div>)
 }
 

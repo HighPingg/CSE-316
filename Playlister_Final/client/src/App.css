@@ -172,9 +172,8 @@ body {
 }
 
 #playlist-cards {
-  position: absolute;
+  max-height: 40vh;
   overflow: scroll;
-  height: 80%;
 }
 
 .list-card,

@@ -1,5 +1,8 @@
 import { useContext, useState } from 'react'
 import { GlobalStoreContext } from '../store'
+
+import WorkspaceScreen from './WorkspaceScreen';
+
 import Box from '@mui/material/Box';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -73,31 +76,41 @@ function ListCard(props) {
     if (store.isListNameEditActive) {
         cardStatus = true;
     }
+
+    let dropDown = ""
+    if (store.currentList != null && store.currentList._id == idNamePair._id) {
+        dropDown = <WorkspaceScreen />
+        console.log(dropDown)
+    }
+
     let cardElement =
         <Box style={{backgroundColor: 'white', borderRadius: '20px'}}>
             <ListItem
                 id={idNamePair._id}
                 key={idNamePair._id}
-                sx={{ marginTop: '15px', display: 'flex', p: 1 }}
+                sx={{ marginTop: '15px', display: 'flex', p: 1, flexDirection: 'column' }}
                 style={{ height: 'fit-content', width: '100%', fontSize: '15pt', backgroundColor: 'background.paper', borderRadius: '20px' }}
                 button
                 onClick={(event) => {
                     handleLoadList(event, idNamePair._id)
                 }}
             >
-                <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-                <Box sx={{ p: 1 }}>
-                    <IconButton onClick={handleToggleEdit} aria-label='edit'>
-                        <EditIcon style={{fontSize:'15pt'}} />
-                    </IconButton>
+                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+                    <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
+                    <Box sx={{ p: 1 }}>
+                        <IconButton onClick={handleToggleEdit} aria-label='edit'>
+                            <EditIcon style={{fontSize:'15pt'}} />
+                        </IconButton>
+                    </Box>
+                    <Box sx={{ p: 1 }}>
+                        <IconButton onClick={(event) => {
+                                handleDeleteList(event, idNamePair._id)
+                            }} aria-label='delete'>
+                            <DeleteIcon style={{fontSize:'15pt'}} />
+                        </IconButton>
+                    </Box>
                 </Box>
-                <Box sx={{ p: 1 }}>
-                    <IconButton onClick={(event) => {
-                            handleDeleteList(event, idNamePair._id)
-                        }} aria-label='delete'>
-                        <DeleteIcon style={{fontSize:'15pt'}} />
-                    </IconButton>
-                </Box>
+                {dropDown}
             </ListItem>
         </Box>
 
