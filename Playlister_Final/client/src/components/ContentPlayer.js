@@ -6,9 +6,17 @@ import Box from "@mui/material/Box";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import Typography from "@mui/material/Typography";
+import IconButton from '@mui/material/IconButton';
+import YouTube from "react-youtube";
+import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
+import StopIcon from '@mui/icons-material/Stop';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
 
 export default function ContentPlayer() {
+    const { store } = useContext(GlobalStoreContext);
     const [ value, setValue ] = useState(0);
+    const [ currentVideo, setCurrentVideo ] = useState('');
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -48,6 +56,58 @@ export default function ContentPlayer() {
         };
     }
 
+    let opts = {
+        width: '100%',
+        height: '250',
+        playerVars: {
+            autoplay: 1,
+        },
+    }
+
+    function handleOnPlayerReady(event) {
+        setCurrentVideo(event.target);
+    }
+
+    function handleStateChange(event) {
+        console.log(event)
+    }
+
+    function handlePause(event) {
+        event.stopPropagation();
+        if (currentVideo != '') {
+            currentVideo.pauseVideo();
+        }
+    }
+
+    function handlePlay(event) {
+        event.stopPropagation();
+        if (currentVideo != '') {
+            currentVideo.playVideo();
+        }
+    }
+
+    function handleForwards(event) {
+        event.stopPropagation();
+        if ((store.currentList !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex < store.currentList.songs.length - 1)) {
+            store.changeVideo(store.videoPlayerIndex + 1);
+        }
+    }
+
+    function handleBackwards(event) {
+        event.stopPropagation();
+        if ((store.currentList !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex > 0)) {
+            store.changeVideo(store.videoPlayerIndex - 1);
+        }
+    }
+
+    let currentPlayingSong = ''
+    if (store.videoPlayerIndex !== null && store.currentList !== null && store.currentList.songs !== null) {
+        currentPlayingSong = store.currentList.songs[store.videoPlayerIndex];
+    }
+
+    let displayPlayer = value == 0 ? 'relative' : 'none';
+    let displayComments = value == 1 ? 'relative' : 'none';
+
     return (<Box sx={{ height: '65vh', width: '38vw', position: 'relative', marginLeft: '10px' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={value} onChange={handleChangeTab} aria-label="basic tabs example">
@@ -55,11 +115,26 @@ export default function ContentPlayer() {
                 <Tab label="Comments" {...a11yProps(1)} />
             </Tabs>
         </Box>
-        <TabPanel value={value} index={0}>
-            Player
-        </TabPanel>
-        <TabPanel value={value} index={1}>
-            Comments
-        </TabPanel>
+        <Box sx={{display: displayPlayer, width: '100%', height: '58vh', marginTop: '10px'}}>
+            <YouTube videoId={currentPlayingSong.youTubeId} opts={opts} onReady={handleOnPlayerReady} onStateChange={handleStateChange} />
+            <Box sx={{ width: '38vw', textAlign: 'center' }}><span style={{ fontWeight: 'bold' }}>Now Playing</span></Box>
+            <Box sx={{height: 'fit-content', width: '100%'}}>
+                <p>
+                    <span style={{fontWeight: 'bold'}}>Playlist:</span> {store.currentList == null ? '' : store.currentList.name}<br />
+                    <span style={{fontWeight: 'bold'}}>Song #:</span> {store.videoPlayerIndex == null ? '' : store.videoPlayerIndex + 1}<br />
+                    <span style={{fontWeight: 'bold'}}>Title:</span> {currentPlayingSong == '' ? '' : currentPlayingSong.title}<br />
+                    <span style={{fontWeight: 'bold'}}>Artist:</span> {currentPlayingSong == '' ? '' : currentPlayingSong.artist}<br />
+                </p>
+            </Box>
+            <Box sx={{height: 'fit-content', width: '100%', textAlign: 'center'}}>
+                <IconButton onClick={handleBackwards}><SkipPreviousIcon /></IconButton>
+                <IconButton onClick={handlePause}><StopIcon /></IconButton>
+                <IconButton onClick={handlePlay}><PlayArrowIcon /></IconButton>
+                <IconButton onClick={handleForwards}><SkipNextIcon /></IconButton>
+            </Box>
+        </Box>
+        <Box sx={{display: displayComments, width: '100%', height: '58vh', marginTop: '10px'}}>
+            COMMENT SECTION
+        </Box>
     </Box>);
 }

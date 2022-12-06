@@ -30,7 +30,8 @@ export const GlobalStoreActionType = {
     SET_LIST_NAME_EDIT_ACTIVE: "SET_LIST_NAME_EDIT_ACTIVE",
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
-    HIDE_MODALS: "HIDE_MODALS"
+    HIDE_MODALS: "HIDE_MODALS",
+    CHANGE_VIDEO: "CHANGE_VIDEO"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -56,7 +57,8 @@ function GlobalStoreContextProvider(props) {
         newListCounter: 0,
         listNameActive: false,
         listIdMarkedForDeletion: null,
-        listMarkedForDeletion: null
+        listMarkedForDeletion: null,
+        videoPlayerIndex: null,
     });
     const history = useHistory();
 
@@ -82,7 +84,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: store.videoPlayerIndex
                 });
             }
             // STOP EDITING THE CURRENT LIST
@@ -96,7 +99,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: null
                 })
             }
             // CREATE A NEW LIST
@@ -110,7 +114,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter + 1,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: null
                 })
             }
             // GET ALL THE LISTS SO WE CAN PRESENT THEM
@@ -124,7 +129,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: store.videoPlayerIndex
                 });
             }
             // PREPARE TO DELETE A LIST
@@ -138,7 +144,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: payload.id,
-                    listMarkedForDeletion: payload.playlist
+                    listMarkedForDeletion: payload.playlist,
+                    videoPlayerIndex: store.videoPlayerIndex
                 });
             }
             // UPDATE A LIST
@@ -152,7 +159,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: payload.songs.length === 0 ? null : 0
                 });
             }
             // START EDITING A LIST NAME
@@ -166,7 +174,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: true,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: store.videoPlayerIndex
                 });
             }
             // 
@@ -180,7 +189,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: store.videoPlayerIndex
                 });
             }
             case GlobalStoreActionType.REMOVE_SONG: {
@@ -193,7 +203,8 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: store.videoPlayerIndex
                 });
             }
             case GlobalStoreActionType.HIDE_MODALS: {
@@ -206,7 +217,22 @@ function GlobalStoreContextProvider(props) {
                     newListCounter: store.newListCounter,
                     listNameActive: false,
                     listIdMarkedForDeletion: null,
-                    listMarkedForDeletion: null
+                    listMarkedForDeletion: null,
+                    videoPlayerIndex: store.videoPlayerIndex
+                });
+            }
+            case GlobalStoreActionType.CHANGE_VIDEO: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentList: store.currentList,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listIdMarkedForDeletion: store.listIdMarkedForDeletion,
+                    listMarkedForDeletion: store.listMarkedForDeletion,
+                    videoPlayerIndex: payload
                 });
             }
             default:
@@ -544,6 +570,13 @@ function GlobalStoreContextProvider(props) {
         });
     }
 
+    store.changeVideo = function (index) {
+        storeReducer({
+            type: GlobalStoreActionType.CHANGE_VIDEO,
+            payload: index
+        });
+    }
+ 
     return (
         <GlobalStoreContext.Provider value={{
             store
