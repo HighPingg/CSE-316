@@ -147,7 +147,7 @@ body {
 #list-selector-list {
   position: relative;
   left: 0%;
-  width: 42.5vw;
+  width: 39vw;
   height: 65vh;
   display: flex;
   flex-direction: column;
@@ -179,7 +179,7 @@ body {
 .list-card,
 .selected-list-card,
 .unselected-list-card {
-  font-size: 18pt;
+  font-size: 15pt;
   margin: 10px;
   padding: 20px;
   border-radius: 25px;

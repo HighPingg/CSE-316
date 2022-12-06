@@ -10,6 +10,7 @@ import RegisterScreen from './RegisterScreen'
 import SongCard from './SongCard'
 import SplashScreen from './SplashScreen'
 import WorkspaceScreen from './WorkspaceScreen'
+import ContentPlayer from './ContentPlayer'
 import MUIAccountErrorModal from './MUIAccountErrorModal'
 import NavigationBar from './NavigationBar'
 /*
@@ -32,4 +33,5 @@ export {
     RegisterScreen,
     SplashScreen,
     WorkspaceScreen,
-    NavigationBar }
+    NavigationBar,
+    ContentPlayer }

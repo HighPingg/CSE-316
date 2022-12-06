@@ -9,6 +9,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
+import AuthContext from '../auth';
+import { Button } from '@mui/material';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -19,6 +21,7 @@ import TextField from '@mui/material/TextField';
 */
 function ListCard(props) {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext)
     const [editActive, setEditActive] = useState(false);
     const [text, setText] = useState("");
     const { idNamePair, selected } = props;
@@ -35,6 +38,10 @@ function ListCard(props) {
             // CHANGE THE CURRENT LIST
             store.setCurrentList(id);
         }
+    }
+    function handleDuplicate(event) {
+        event.stopPropagation();
+        // TODO
     }
 
     function handleToggleEdit(event) {
@@ -83,6 +90,19 @@ function ListCard(props) {
         console.log(dropDown)
     }
 
+    let playlistControls = '';
+    if (store.currentList != null && store.currentList._id == idNamePair._id) {
+        if (store.currentList.username === auth.user.username) {
+            playlistControls = <Box sx={{height: 'fit-content', width: '100%', position: 'relative', marginTop: '10px'}}>
+                <Button onClick={(event) => {event.stopPropagation(); store.undo()}}>Undo</Button>
+                <Button onClick={(event) => {event.stopPropagation(); store.redo()}}>Redo</Button>
+                <Button onClick={handleToggleEdit}>Rename</Button>
+                <Button onClick={(event) => handleDeleteList(event, idNamePair._id)}>Delete</Button>
+                <Button onClick={handleDuplicate}>Duplicate</Button>
+            </Box>
+        }
+    }
+
     let cardElement =
         <Box style={{backgroundColor: 'white', borderRadius: '20px'}}>
             <ListItem
@@ -96,21 +116,13 @@ function ListCard(props) {
                 }}
             >
                 <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
-                    <Box sx={{ p: 1, flexGrow: 1 }}>{idNamePair.name}</Box>
-                    <Box sx={{ p: 1 }}>
-                        <IconButton onClick={handleToggleEdit} aria-label='edit'>
-                            <EditIcon style={{fontSize:'15pt'}} />
-                        </IconButton>
-                    </Box>
-                    <Box sx={{ p: 1 }}>
-                        <IconButton onClick={(event) => {
-                                handleDeleteList(event, idNamePair._id)
-                            }} aria-label='delete'>
-                            <DeleteIcon style={{fontSize:'15pt'}} />
-                        </IconButton>
+                    <Box sx={{ p: 1, flexGrow: 1 }}>
+                        <span>{idNamePair.name}</span><br></br>
+                        <span style={{fontSize: '10pt'}}>By <span style={{color: '#7289da'}}>{idNamePair.username}</span></span>
                     </Box>
                 </Box>
                 {dropDown}
+                {playlistControls}
             </ListItem>
         </Box>
 
