@@ -12,11 +12,13 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import StopIcon from '@mui/icons-material/Stop';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
+import { List, ListItem, TextField } from "@mui/material";
 
 export default function ContentPlayer() {
     const { store } = useContext(GlobalStoreContext);
     const [ value, setValue ] = useState(0);
     const [ currentVideo, setCurrentVideo ] = useState('');
+    const [ commentSection, setCommentSection ] = useState('');
 
     function TabPanel(props) {
         const { children, value, index, ...other } = props;
@@ -45,7 +47,6 @@ export default function ContentPlayer() {
     };
 
     function handleChangeTab(event, newValue) {
-        console.log(newValue)
         setValue(newValue);
     }
 
@@ -104,6 +105,15 @@ export default function ContentPlayer() {
         }
     }
 
+    function handleCommentKey(event) {
+        if (event.keyCode == 13) {
+            store.postComment(commentSection);
+
+            // Reset the comment box
+            setCommentSection('');
+        }
+    }
+
     let currentPlayingSong = ''
     if (store.videoPlayerIndex !== null && store.currentList !== null && store.currentList.songs !== null) {
         currentPlayingSong = store.currentList.songs[store.videoPlayerIndex];
@@ -138,7 +148,23 @@ export default function ContentPlayer() {
             </Box>
         </Box>
         <Box sx={{display: displayComments, width: '100%', height: '58vh', marginTop: '10px'}}>
-            COMMENT SECTION
+            <List sx={{ height: '49vh', width: '100%', overflow: 'scroll' }}>
+                {
+                    store.currentList != null ?
+                    store.currentList.comments.map((comment, index) => (
+                        <ListItem
+                            sx={{ marginTop: '15px', p: 1}}
+                            style={{ height: 'fit-content', width: '100%', fontSize: '10pt', backgroundColor: 'white', borderRadius: '20px' }}>
+                                <Box sx={{ margin: '10px', width: '95%', wordWrap: 'break-word' }}>
+                                    <span style={{color: '#7289da'}}>{comment.commentUsername}</span>
+                                    <span>:&nbsp;</span>
+                                    <span>{comment.comment}</span>
+                                </Box>
+                        </ListItem>
+                    )) : ''
+                }
+            </List>
+            <TextField sx={{ bgcolor: 'white', width: '100%' }} label="Comment" variant="outlined" value={commentSection} onChange={(event) => setCommentSection(event.target.value)} onKeyDown={handleCommentKey} />
         </Box>
     </Box>);
 }

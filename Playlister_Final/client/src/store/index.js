@@ -31,7 +31,8 @@ export const GlobalStoreActionType = {
     EDIT_SONG: "EDIT_SONG",
     REMOVE_SONG: "REMOVE_SONG",
     HIDE_MODALS: "HIDE_MODALS",
-    CHANGE_VIDEO: "CHANGE_VIDEO"
+    CHANGE_VIDEO: "CHANGE_VIDEO",
+    UPDATE_CURRENT_LIST: "UPDATE_CURRENT_LIST"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -235,6 +236,20 @@ function GlobalStoreContextProvider(props) {
                     videoPlayerIndex: payload
                 });
             }
+            case GlobalStoreActionType.UPDATE_CURRENT_LIST: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: store.idNamePairs,
+                    currentList: payload,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listIdMarkedForDeletion: store.listIdMarkedForDeletion,
+                    listMarkedForDeletion: store.listMarkedForDeletion,
+                    videoPlayerIndex: store.videoPlayerIndex
+                });
+            }
             default:
                 return store;
         }
@@ -297,7 +312,7 @@ function GlobalStoreContextProvider(props) {
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
         let newListName = "Untitled" + store.newListCounter;
-        const response = await api.createPlaylist(newListName, [], auth.user.email, auth.user.username, 0, 0, 0, -1);
+        const response = await api.createPlaylist(newListName, [], auth.user.email, auth.user.username, 0, 0, 0, -1, []);
         console.log("createNewList response: " + response);
         if (response.status === 201) {
             tps.clearAllTransactions();
@@ -543,6 +558,25 @@ function GlobalStoreContextProvider(props) {
         }
         asyncUpdateCurrentList();
     }
+
+    store.postComment = function (comment) {
+        if (store.currentList != null) {
+            let newPlaylist = structuredClone(store.currentList);
+            newPlaylist.comments.push({commentUsername: auth.user.username, comment: comment})
+
+            async function asyncUpdateCurrentList() {
+                const response = await api.updatePlaylistById(store.currentList._id, newPlaylist);
+                if (response.data.success) {
+                    storeReducer({
+                        type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
+                        payload: newPlaylist
+                    });
+                }
+            }
+            asyncUpdateCurrentList();
+        }
+    }
+
     store.undo = function () {
         tps.undoTransaction();
     }
