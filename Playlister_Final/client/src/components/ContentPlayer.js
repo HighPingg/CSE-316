@@ -71,7 +71,7 @@ export default function ContentPlayer() {
 
     function handleStateChange(event) {
         if (event.data === 0) {
-            if ((store.currentList !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex < store.currentList.songs.length - 1)) {
+            if ((store.videoPlayerPlaylist !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex < store.videoPlayerPlaylist.songs.length - 1)) {
                 store.changeVideo(store.videoPlayerIndex + 1);
             }
         }
@@ -93,14 +93,14 @@ export default function ContentPlayer() {
 
     function handleForwards(event) {
         event.stopPropagation();
-        if ((store.currentList !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex < store.currentList.songs.length - 1)) {
+        if ((store.videoPlayerPlaylist !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex < store.videoPlayerPlaylist.songs.length - 1)) {
             store.changeVideo(store.videoPlayerIndex + 1);
         }
     }
 
     function handleBackwards(event) {
         event.stopPropagation();
-        if ((store.currentList !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex > 0)) {
+        if ((store.videoPlayerPlaylist !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex > 0)) {
             store.changeVideo(store.videoPlayerIndex - 1);
         }
     }
@@ -115,8 +115,8 @@ export default function ContentPlayer() {
     }
 
     let currentPlayingSong = ''
-    if (store.videoPlayerIndex !== null && store.currentList !== null && store.currentList.songs !== null) {
-        currentPlayingSong = store.currentList.songs[store.videoPlayerIndex];
+    if (store.videoPlayerIndex !== null && store.videoPlayerPlaylist !== null && store.videoPlayerPlaylist.songs !== null) {
+        currentPlayingSong = store.videoPlayerPlaylist.songs[store.videoPlayerIndex];
     }
 
     let displayPlayer = value == 0 ? 'relative' : 'none';
@@ -134,7 +134,7 @@ export default function ContentPlayer() {
             <Box sx={{ width: '38vw', textAlign: 'center' }}><span style={{ fontWeight: 'bold' }}>Now Playing</span></Box>
             <Box sx={{height: 'fit-content', width: '100%'}}>
                 <p>
-                    <span style={{fontWeight: 'bold'}}>Playlist:</span> {store.currentList == null ? '' : store.currentList.name}<br />
+                    <span style={{fontWeight: 'bold'}}>Playlist:</span> {store.videoPlayerPlaylist == null ? '' : store.videoPlayerPlaylist.name}<br />
                     <span style={{fontWeight: 'bold'}}>Song #:</span> {store.videoPlayerIndex == null ? '' : store.videoPlayerIndex + 1}<br />
                     <span style={{fontWeight: 'bold'}}>Title:</span> {currentPlayingSong == '' ? '' : currentPlayingSong.title}<br />
                     <span style={{fontWeight: 'bold'}}>Artist:</span> {currentPlayingSong == '' ? '' : currentPlayingSong.artist}<br />
@@ -150,8 +150,8 @@ export default function ContentPlayer() {
         <Box sx={{display: displayComments, width: '100%', height: '58vh', marginTop: '10px'}}>
             <List sx={{ height: '49vh', width: '100%', overflow: 'scroll' }}>
                 {
-                    store.currentList != null ?
-                    store.currentList.comments.map((comment, index) => (
+                    store.videoPlayerPlaylist != null ?
+                    store.videoPlayerPlaylist.comments.map((comment, index) => (
                         <ListItem
                             sx={{ marginTop: '15px', p: 1}}
                             style={{ height: 'fit-content', width: '100%', fontSize: '10pt', backgroundColor: 'white', borderRadius: '20px' }}>

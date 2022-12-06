@@ -11,6 +11,8 @@ import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
 import AuthContext from '../auth';
 import { Button } from '@mui/material';
+import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
+import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -36,9 +38,24 @@ function ListCard(props) {
             console.log("load " + event.target.id);
 
             // CHANGE THE CURRENT LIST
+            store.changePlayingPlaylist(id);
+        }
+    }
+
+    function handleDownArrow(event, id) {
+        console.log("handleLoadList for " + id);
+        if (!event.target.disabled) {
+            let _id = event.target.id;
+            if (_id.indexOf('list-card-text-') >= 0)
+                _id = ("" + _id).substring("list-card-text-".length);
+
+            console.log("load " + event.target.id);
+
+            // CHANGE THE CURRENT LIST
             store.setCurrentList(id);
         }
     }
+
     function handleDuplicate(event) {
         event.stopPropagation();
         // TODO
@@ -87,7 +104,6 @@ function ListCard(props) {
     let dropDown = ""
     if (store.currentList != null && store.currentList._id == idNamePair._id) {
         dropDown = <WorkspaceScreen />
-        console.log(dropDown)
     }
 
     let playlistControls = '';
@@ -101,6 +117,13 @@ function ListCard(props) {
                 <Button onClick={handleDuplicate}>Duplicate</Button>
             </Box>
         }
+    }
+
+    let bottomControls = ""
+    if (store.currentList !== null && store.currentList._id === idNamePair._id) {
+        bottomControls = <IconButton sx={{float: 'right'}} onClick={(event) => {event.stopPropagation(); store.closeCurrentList();}}><KeyboardDoubleArrowUpIcon /></IconButton>
+    } else {
+        bottomControls = <IconButton sx={{float: 'right'}} onClick={(event) => handleDownArrow(event, idNamePair._id)}><KeyboardDoubleArrowDownIcon /></IconButton>
     }
 
     let cardElement =
@@ -123,6 +146,9 @@ function ListCard(props) {
                 </Box>
                 {dropDown}
                 {playlistControls}
+                <Box sx={{width: '100%'}}>
+                    {bottomControls}
+                </Box>
             </ListItem>
         </Box>
 
