@@ -69,7 +69,11 @@ export default function ContentPlayer() {
     }
 
     function handleStateChange(event) {
-        console.log(event)
+        if (event.data === 0) {
+            if ((store.currentList !== null && store.videoPlayerIndex !== null) && (store.videoPlayerIndex < store.currentList.songs.length - 1)) {
+                store.changeVideo(store.videoPlayerIndex + 1);
+            }
+        }
     }
 
     function handlePause(event) {
