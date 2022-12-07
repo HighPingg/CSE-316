@@ -1,6 +1,7 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { useHistory } from 'react-router-dom'
 import api from './auth-request-api'
+import { GlobalStoreContext } from "../store";
 
 const AuthContext = createContext();
 console.log("create AuthContext: " + AuthContext);
@@ -16,6 +17,8 @@ export const AuthActionType = {
 }
 
 function AuthContextProvider(props) {
+    const { store } = useContext(GlobalStoreContext);
+
     const [auth, setAuth] = useState({
         errorMsg: null,
         user: null,

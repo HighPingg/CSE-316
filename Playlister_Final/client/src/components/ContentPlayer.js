@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import GlobalStoreContext from "../store";
+import AuthContext from "../auth";
 
 import PropTypes from 'prop-types';
 import Box from "@mui/material/Box";
@@ -16,6 +17,7 @@ import { List, ListItem, TextField } from "@mui/material";
 
 export default function ContentPlayer() {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
     const [ value, setValue ] = useState(0);
     const [ currentVideo, setCurrentVideo ] = useState('');
     const [ commentSection, setCommentSection ] = useState('');

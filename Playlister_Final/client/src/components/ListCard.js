@@ -4,8 +4,6 @@ import { GlobalStoreContext } from '../store'
 import WorkspaceScreen from './WorkspaceScreen';
 
 import Box from '@mui/material/Box';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import ListItem from '@mui/material/ListItem';
 import TextField from '@mui/material/TextField';
@@ -13,6 +11,12 @@ import AuthContext from '../auth';
 import { Button } from '@mui/material';
 import KeyboardDoubleArrowDownIcon from '@mui/icons-material/KeyboardDoubleArrowDown';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
+import UndoIcon from '@mui/icons-material/Undo';
+import RedoIcon from '@mui/icons-material/Redo';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import PublishIcon from '@mui/icons-material/Publish';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -29,6 +33,7 @@ function ListCard(props) {
     const { idNamePair, selected } = props;
 
     function handleLoadList(event, id) {
+        event.stopPropagation();
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
             let _id = event.target.id;
@@ -43,6 +48,7 @@ function ListCard(props) {
     }
 
     function handleDownArrow(event, id) {
+        event.stopPropagation();
         console.log("handleLoadList for " + id);
         if (!event.target.disabled) {
             let _id = event.target.id;
@@ -58,7 +64,12 @@ function ListCard(props) {
 
     function handleDuplicate(event) {
         event.stopPropagation();
-        // TODO
+        store.duplicateCurrentList();
+    }
+
+    function handlePublish(event) {
+        event.stopPropagation();
+        store.publishCurrentPlaylist();
     }
 
     function handleToggleEdit(event) {
@@ -110,11 +121,14 @@ function ListCard(props) {
     if (store.currentList != null && store.currentList._id == idNamePair._id) {
         if (store.currentList.username === auth.user.username) {
             playlistControls = <Box sx={{height: 'fit-content', width: '100%', position: 'relative', marginTop: '10px'}}>
-                <Button onClick={(event) => {event.stopPropagation(); store.undo()}}>Undo</Button>
-                <Button onClick={(event) => {event.stopPropagation(); store.redo()}}>Redo</Button>
-                <Button onClick={handleToggleEdit}>Rename</Button>
-                <Button onClick={(event) => handleDeleteList(event, idNamePair._id)}>Delete</Button>
-                <Button onClick={handleDuplicate}>Duplicate</Button>
+                <IconButton onClick={(event) => {event.stopPropagation(); store.undo()}}><UndoIcon /></IconButton>
+                <IconButton onClick={(event) => {event.stopPropagation(); store.redo()}}><RedoIcon /></IconButton>
+                <Box style={{float: 'right'}}>
+                    <IconButton onClick={handleToggleEdit}><EditIcon /></IconButton>
+                    <IconButton onClick={(event) => handleDeleteList(event, idNamePair._id)}><DeleteIcon /></IconButton>
+                    <IconButton onClick={handleDuplicate}><ContentCopyIcon /></IconButton>
+                    <IconButton onClick={handlePublish}><PublishIcon /></IconButton>
+                </Box>
             </Box>
         }
     }
