@@ -17,6 +17,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PublishIcon from '@mui/icons-material/Publish';
+import { fontSize } from '@mui/system';
 
 /*
     This is a card in our list of top 5 lists. It lets select
@@ -119,25 +120,43 @@ function ListCard(props) {
 
     let playlistControls = '';
     if (store.currentList != null && store.currentList._id == idNamePair._id) {
-        if (store.currentList.username === auth.user.username) {
-            playlistControls = <Box sx={{height: 'fit-content', width: '100%', position: 'relative', marginTop: '10px'}}>
-                <IconButton onClick={(event) => {event.stopPropagation(); store.undo()}}><UndoIcon /></IconButton>
-                <IconButton onClick={(event) => {event.stopPropagation(); store.redo()}}><RedoIcon /></IconButton>
-                <Box style={{float: 'right'}}>
+        playlistControls = <Box sx={{height: 'fit-content', width: '100%', position: 'relative', marginTop: '10px', display: 'flex', justifyContent: 'space-between'}}>
+            {
+                // If the song isn't published, then we can output this stuff
+                store.currentList.published === -1 && store.currentList.username === auth.user.username ?
+                <Box sx={{width: 'fit-content', margin: '0px'}}>
+                    <IconButton onClick={(event) => {event.stopPropagation(); store.undo()}}><UndoIcon /></IconButton>
+                    <IconButton onClick={(event) => {event.stopPropagation(); store.redo()}}><RedoIcon /></IconButton>
+                </Box> : ''
+            }
+            <Box style={{width: 'fit-content'}}>
+            {
+                // If the song isn't published, then we can output this stuff
+                store.currentList.published === -1 && store.currentList.username === auth.user.username ?
                     <IconButton onClick={handleToggleEdit}><EditIcon /></IconButton>
-                    <IconButton onClick={(event) => handleDeleteList(event, idNamePair._id)}><DeleteIcon /></IconButton>
-                    <IconButton onClick={handleDuplicate}><ContentCopyIcon /></IconButton>
-                    <IconButton onClick={handlePublish}><PublishIcon /></IconButton>
-                </Box>
+                    : ''
+            }
+            {
+                store.currentList.username === auth.user.username ?
+                <IconButton onClick={(event) => handleDeleteList(event, idNamePair._id)}><DeleteIcon /></IconButton>
+                : ''
+            }
+                <IconButton onClick={handleDuplicate}><ContentCopyIcon /></IconButton>
+            {
+                // If the song isn't published, then we can output this stuff
+                store.currentList.published === -1 && store.currentList.username === auth.user.username ?
+                <IconButton onClick={handlePublish}><PublishIcon /></IconButton>
+                : ''
+            }
             </Box>
-        }
+        </Box>
     }
 
     let bottomControls = ""
     if (store.currentList !== null && store.currentList._id === idNamePair._id) {
-        bottomControls = <IconButton sx={{float: 'right'}} onClick={(event) => {event.stopPropagation(); store.closeCurrentList();}}><KeyboardDoubleArrowUpIcon /></IconButton>
+        bottomControls = <IconButton sx={idNamePair.published === -1 ? {float: 'right'} : {}} onClick={(event) => {event.stopPropagation(); store.closeCurrentList();}}><KeyboardDoubleArrowUpIcon /></IconButton>
     } else {
-        bottomControls = <IconButton sx={{float: 'right'}} onClick={(event) => handleDownArrow(event, idNamePair._id)}><KeyboardDoubleArrowDownIcon /></IconButton>
+        bottomControls = <IconButton sx={idNamePair.published === -1 ? {float: 'right'} : {}} onClick={(event) => handleDownArrow(event, idNamePair._id)}><KeyboardDoubleArrowDownIcon /></IconButton>
     }
 
     let cardElement =
@@ -160,7 +179,19 @@ function ListCard(props) {
                 </Box>
                 {dropDown}
                 {playlistControls}
-                <Box sx={{width: '100%'}}>
+                <Box sx={idNamePair.published === -1 ? {marginLeft: '15px', width: '100%'} : {marginLeft: '15px', display: 'flex', justifyContent: 'space-between', width: '100%'}}>
+                    {
+                        // If this is published, then we can output the published information
+                        idNamePair.published !== -1 ?
+                            <Box><span style={{fontSize: '8pt', textAlign: 'center'}} >Published:&nbsp;<span style={{color: '#7289da'}}>{new Date(idNamePair.published).toDateString().split(' ').slice(1).join(' ')}</span></span></Box>
+                        : ''
+                    }
+                    {
+                        // If this is published, then we can output the viewer information
+                        idNamePair.published !== -1 ?
+                            <Box><span style={{fontSize: '8pt', textAlign: 'center'}} >Viewers:&nbsp;<span style={{color: '#7289da'}}>{'VIEWERS'}</span></span></Box>
+                        : ''
+                    }
                     {bottomControls}
                 </Box>
             </ListItem>

@@ -48,35 +48,51 @@ function SongCard(props) {
     }
 
     let cardClass = "list-card unselected-list-card";
-    return (
-        <div
-            key={index}
-            id={'song-' + index + '-card'}
-            className={cardClass}
-            onDragStart={handleDragStart}
-            onDragOver={handleDragOver}
-            onDragEnter={handleDragEnter}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            draggable="true"
-            onClick={handleClick}
-        >
-            {index + 1}.
-            <a
-                id={'song-' + index + '-link'}
-                className="song-link"
-                href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
-                {song.title} by {song.artist}
-            </a>
-            <input
-                type="button"
-                id={"remove-song-" + index}
-                className="list-card-button"
-                value={"\u2715"}
-                onClick={handleRemoveSong}
-            />
-        </div>
-    );
+    let songCard = store.currentList !== null && store.currentList.published === -1 ?
+                    <div
+                        key={index}
+                        id={'song-' + index + '-card'}
+                        className={cardClass}
+                        onDragStart={handleDragStart}
+                        onDragOver={handleDragOver}
+                        onDragEnter={handleDragEnter}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        draggable="true"
+                        onClick={handleClick}
+                    >
+                        {index + 1}.
+                        <a
+                            id={'song-' + index + '-link'}
+                            className="song-link"
+                            href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
+                            {song.title} by {song.artist}
+                        </a>
+                        <input
+                            type="button"
+                            id={"remove-song-" + index}
+                            className="list-card-button"
+                            value={"\u2715"}
+                            onClick={handleRemoveSong}
+                        />
+                    </div>
+                :
+                    <div
+                        key={index}
+                        id={'song-' + index + '-card'}
+                        onClick={(event) => {event.stopPropagation(); store.changeVideo(index)}}
+                        style={{color: 'white', backgroundColor: '#7289da', margin: '10px', borderRadius: '20px', padding: '8px'}}
+                    >
+                        {index + 1}.
+                        <a
+                            id={'song-' + index + '-link'}
+                            className="song-link"
+                            href={"https://www.youtube.com/watch?v=" + song.youTubeId}>
+                            {song.title} by {song.artist}
+                        </a>
+                    </div>
+
+    return (songCard);
 }
 
 export default SongCard;

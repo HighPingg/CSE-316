@@ -35,14 +35,14 @@ function WorkspaceScreen() {
             }
             {
                 // If the user is the owner, then we return the add button
-                store.currentList.username === auth.user.username ?
+                store.currentList.username === auth.user.username && store.currentList.published == -1 ?
                 <div
-                className="list-card unselected-list-card"
-                onClick={ (event) => {
-                    event.stopPropagation();
-                    store.addNewSong();
-                } }
-                style={{color: 'black', textAlign: 'center'}}
+                    className="list-card unselected-list-card"
+                    onClick={ (event) => {
+                        event.stopPropagation();
+                        store.addNewSong();
+                    } }
+                    style={{color: 'black', textAlign: 'center'}}
                 >+
                 </div> : ''
             }

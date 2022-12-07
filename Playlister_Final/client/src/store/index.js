@@ -685,10 +685,20 @@ function GlobalStoreContextProvider(props) {
     }
 
     store.changeVideo = function (index) {
-        storeReducer({
-            type: GlobalStoreActionType.CHANGE_VIDEO,
-            payload: index
-        });
+        if (store.videoPlayerPlaylist === null) {
+            let playingList = structuredClone(store.currentList);
+
+            storeReducer({
+                type: GlobalStoreActionType.CHANGE_PLAYING_LIST,
+                payload: {songIndex: index, playlist: playingList}
+            })
+
+        } else {
+            storeReducer({
+                type: GlobalStoreActionType.CHANGE_VIDEO,
+                payload: index
+            });
+        }
     }
 
     store.changePlayingPlaylist = function (id) {
