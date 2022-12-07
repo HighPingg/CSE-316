@@ -17,6 +17,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PublishIcon from '@mui/icons-material/Publish';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import { fontSize } from '@mui/system';
 
 /*
@@ -61,6 +63,16 @@ function ListCard(props) {
             // CHANGE THE CURRENT LIST
             store.setCurrentList(id);
         }
+    }
+
+    function handleLike(event) {
+        event.stopPropagation();
+        store.likeSong(idNamePair._id);
+    }
+
+    function handleDislike(event) {
+        event.stopPropagation();
+        store.dislikeSong(idNamePair._id);
     }
 
     function handleDuplicate(event) {
@@ -171,11 +183,21 @@ function ListCard(props) {
                     handleLoadList(event, idNamePair._id)
                 }}
             >
-                <Box sx={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+                <Box sx={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
                     <Box sx={{ p: 1, flexGrow: 1 }}>
                         <span>{idNamePair.name}</span><br></br>
                         <span style={{fontSize: '10pt'}}>By <span style={{color: '#7289da'}}>{idNamePair.username}</span></span>
                     </Box>
+
+                    {
+                        idNamePair.published != -1 ?
+                            <Box sx={{float: 'right'}}>
+                                <IconButton onClick={handleLike}><ThumbUpIcon /></IconButton>
+                                <span>{idNamePair.likes.length}</span>
+                                <IconButton onClick={handleDislike}><ThumbDownIcon /></IconButton>
+                                <span>{idNamePair.dislikes.length}</span>
+                            </Box> : ''
+                    }
                 </Box>
                 {dropDown}
                 {playlistControls}
@@ -189,7 +211,7 @@ function ListCard(props) {
                     {
                         // If this is published, then we can output the viewer information
                         idNamePair.published !== -1 ?
-                            <Box><span style={{fontSize: '8pt', textAlign: 'center'}} >Viewers:&nbsp;<span style={{color: '#7289da'}}>{'VIEWERS'}</span></span></Box>
+                            <Box><span style={{fontSize: '8pt', textAlign: 'center'}} >Listens:&nbsp;<span style={{color: '#7289da'}}>{idNamePair.listens.length}</span></span></Box>
                         : ''
                     }
                     {bottomControls}

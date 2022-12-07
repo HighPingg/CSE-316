@@ -33,7 +33,9 @@ export const GlobalStoreActionType = {
     HIDE_MODALS: "HIDE_MODALS",
     CHANGE_VIDEO: "CHANGE_VIDEO",
     UPDATE_CURRENT_LIST: "UPDATE_CURRENT_LIST",
-    CHANGE_PLAYING_LIST: "CHANGE_PLAYING_LIST"
+    CHANGE_PLAYING_LIST: "CHANGE_PLAYING_LIST",
+    UPDATE_VIEW: "UPDATE_VIEW",
+    ADD_VIEWERS_AND_PLAY: "ADD_VIEWERS_AND_PLAY"
 }
 
 // WE'LL NEED THIS TO PROCESS TRANSACTIONS
@@ -279,6 +281,36 @@ function GlobalStoreContextProvider(props) {
                     videoPlayerPlaylist: payload.playlist
                 });
             }
+            case GlobalStoreActionType.UPDATE_VIEW: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: payload.idNamePairs,
+                    currentList: payload.currentList,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listIdMarkedForDeletion: store.listIdMarkedForDeletion,
+                    listMarkedForDeletion: store.listMarkedForDeletion,
+                    videoPlayerIndex: store.videoPlayerIndex,
+                    videoPlayerPlaylist: store.videoPlayerPlaylist
+                });
+            }
+            case GlobalStoreActionType.ADD_VIEWERS_AND_PLAY: {
+                return setStore({
+                    currentModal : CurrentModal.NONE,
+                    idNamePairs: payload.idNamePairs,
+                    currentList: store.currentList,
+                    currentSongIndex: store.currentSongIndex,
+                    currentSong: store.currentSong,
+                    newListCounter: store.newListCounter,
+                    listNameActive: store.listNameActive,
+                    listIdMarkedForDeletion: store.listIdMarkedForDeletion,
+                    listMarkedForDeletion: store.listMarkedForDeletion,
+                    videoPlayerIndex: payload.songIndex,
+                    videoPlayerPlaylist: payload.playlist
+                });
+            }
             default:
                 return store;
         }
@@ -341,7 +373,7 @@ function GlobalStoreContextProvider(props) {
     // THIS FUNCTION CREATES A NEW LIST
     store.createNewList = async function () {
         let newListName = "Untitled" + store.newListCounter;
-        const response = await api.createPlaylist(newListName, [], auth.user.email, auth.user.username, 0, 0, 0, -1, []);
+        const response = await api.createPlaylist(newListName, [], auth.user.email, auth.user.username, [], [], [], -1, []);
         console.log("createNewList response: " + response);
         if (response.status === 201) {
             tps.clearAllTransactions();
@@ -376,7 +408,7 @@ function GlobalStoreContextProvider(props) {
             let newSongs = structuredClone(store.currentList.songs);
             let ownerEmail = auth.user.email;
             let ownerUsername = auth.user.username;
-            const response = await api.createPlaylist(newListName, newSongs, ownerEmail, ownerUsername, 0, 0, 0, -1, []);
+            const response = await api.createPlaylist(newListName, newSongs, ownerEmail, ownerUsername, [], [], [], -1, []);
             console.log("createNewList response: " + response);
             if (response.status === 201) {
                 tps.clearAllTransactions();
@@ -414,14 +446,92 @@ function GlobalStoreContextProvider(props) {
             async function asyncUpdateCurrentList() {
                 const response = await api.updatePlaylistById(store.currentList._id, newPlaylist);
                 if (response.data.success) {
-                    storeReducer({
-                        type: GlobalStoreActionType.UPDATE_CURRENT_LIST,
-                        payload: newPlaylist
-                    });
+                    store.refreshView();
                 }
             }
             asyncUpdateCurrentList();
         }
+    }
+
+    store.likeSong = async function (id) {
+        // Get the playlist, then add the like
+        async function asyncSetCurrentList(id) {
+            let response = await api.getPlaylistById(id);
+            if (response.data.success) {
+                let playlist = response.data.playlist;
+                if (playlist.published !== -1) {
+                    // If the user is in dislike, then switch.
+                    if (playlist.dislikes.includes(auth.user.username)) {
+                        playlist.likes.push(auth.user.username);
+                        playlist.dislikes = playlist.dislikes.filter(username => username !== auth.user.username);
+                        console.log(playlist)
+
+                        async function asyncUpdateCurrentList() {
+                            const response = await api.updatePlaylistById(playlist._id, playlist);
+                            if (response.data.success) {
+                                store.refreshView();
+                            }
+                        }
+                        asyncUpdateCurrentList();
+                    
+                    
+                    // If the user isn't in likes, then add them.
+                    } else if (!playlist.likes.includes(auth.user.username)) {
+                        playlist.likes.push(auth.user.username);
+                        console.log(playlist)
+
+                        async function asyncUpdateCurrentList() {
+                            const response = await api.updatePlaylistById(playlist._id, playlist);
+                            if (response.data.success) {
+                                store.refreshView();
+                            }
+                        }
+                        asyncUpdateCurrentList();
+                    }
+                }
+            }
+        }
+        asyncSetCurrentList(id);
+    }
+
+    store.dislikeSong = async function (id) {
+        // Get the playlist, then add the like
+        async function asyncSetCurrentList(id) {
+            let response = await api.getPlaylistById(id);
+            if (response.data.success) {
+                let playlist = response.data.playlist;
+                if (playlist.published !== -1) {
+                    // If the user is in like, then switch.
+                    if (playlist.likes.includes(auth.user.username)) {
+                        playlist.dislikes.push(auth.user.username);
+                        playlist.likes = playlist.likes.filter(username => username !== auth.user.username);
+                        console.log(playlist)
+
+                        async function asyncUpdateCurrentList() {
+                            const response = await api.updatePlaylistById(playlist._id, playlist);
+                            if (response.data.success) {
+                                store.refreshView();
+                            }
+                        }
+                        asyncUpdateCurrentList();
+                    
+                    // If the user isn't in likes, then add them.
+                    } else if (!playlist.dislikes.includes(auth.user.username)) {
+                        playlist.dislikes.push(auth.user.username);
+                        console.log(playlist)
+
+                        async function asyncUpdateCurrentList() {
+                            const response = await api.updatePlaylistById(playlist._id, playlist);
+                            if (response.data.success) {
+                                store.refreshView();
+                            }
+                        }
+                        asyncUpdateCurrentList();
+                    }
+                }
+            }
+        }
+        asyncSetCurrentList(id);
     }
 
     // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
@@ -435,6 +545,41 @@ function GlobalStoreContextProvider(props) {
                     type: GlobalStoreActionType.LOAD_ID_NAME_PAIRS,
                     payload: pairsArray
                 });
+            }
+            else {
+                console.log("API FAILED TO GET THE LIST PAIRS");
+            }
+        }
+        asyncLoadIdNamePairs();
+    }
+
+
+    // THIS FUNCTION LOADS ALL THE ID, NAME PAIRS SO WE CAN LIST ALL THE LISTS
+    store.refreshView = function () {
+        async function asyncLoadIdNamePairs() {
+            const response = await api.getPlaylistPairs();
+            if (response.data.success) {
+                let pairsArray = response.data.idNamePairs;
+                console.log(pairsArray)
+
+                async function asyncSetCurrentList() {
+                    if (store.currentList !== null) {
+                        let response = await api.getPlaylistById(store.currentList._id);
+                        if (response.data.success) {
+                            let playlist = response.data.playlist;
+                            storeReducer({
+                                type: GlobalStoreActionType.UPDATE_VIEW,
+                                payload: {idNamePairs: pairsArray, currentList: playlist}
+                            });
+                        }
+                    } else {
+                        storeReducer({
+                            type: GlobalStoreActionType.UPDATE_VIEW,
+                            payload: {idNamePairs: pairsArray, currentList: store.currentList}
+                        });
+                    }
+                }
+                asyncSetCurrentList();
             }
             else {
                 console.log("API FAILED TO GET THE LIST PAIRS");
@@ -706,10 +851,43 @@ function GlobalStoreContextProvider(props) {
             let response = await api.getPlaylistById(id);
             if (response.data.success) {
                 let playlist = response.data.playlist;
-                storeReducer({
-                    type: GlobalStoreActionType.CHANGE_PLAYING_LIST,
-                    payload: {songIndex: playlist.songs.length === 0 ? null : 0, playlist: playlist}
-                });
+
+                // If this user has never listened to the playlist and this playlist is published, then add them to listens
+                if (playlist.published !== -1 && !playlist.listens.includes(auth.user.username)) {
+                    playlist.listens.push(auth.user.username);
+
+                    async function asyncUpdateCurrentList() {
+                        const response = await api.updatePlaylistById(playlist._id, playlist);
+                        if (response.data.success) {
+
+                            // Get pairslist
+                            async function asyncLoadIdNamePairs() {
+                                const response = await api.getPlaylistPairs();
+                                if (response.data.success) {
+                                    let pairsArray = response.data.idNamePairs;
+                                    storeReducer({
+                                        type: GlobalStoreActionType.ADD_VIEWERS_AND_PLAY,
+                                        payload: {idNamePairs: pairsArray,
+                                                songIndex: playlist.songs.length === 0 ? null : 0,
+                                                playlist: playlist
+                                        }
+                                    });
+                                }
+                                else {
+                                    console.log("API FAILED TO GET THE LIST PAIRS");
+                                }
+                            }
+                            asyncLoadIdNamePairs();
+                        }
+                    }
+                    asyncUpdateCurrentList();
+
+                } else {
+                    storeReducer({
+                        type: GlobalStoreActionType.CHANGE_PLAYING_LIST,
+                        payload: {songIndex: playlist.songs.length === 0 ? null : 0, playlist: playlist}
+                    });
+                }
             }
         }
         getListToDelete(id);
