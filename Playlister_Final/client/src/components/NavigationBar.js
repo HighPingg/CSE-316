@@ -28,7 +28,7 @@ export default function NavigationBar() {
     
     function handleSearchKey(event) {
         if (event.keyCode == 13) {
-            store.setSearch(searchQuery);
+            store.setSearch(searchQuery == '' ? null : searchQuery);
         }
     }
 

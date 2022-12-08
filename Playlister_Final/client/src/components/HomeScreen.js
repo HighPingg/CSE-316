@@ -32,6 +32,10 @@ const HomeScreen = () => {
 
     // Apply search filters and sorts
     let displayedContent = store.idNamePairs;
+    if (store.searchQuery === null) {
+        displayedContent = [];
+    }
+
     if (store.filter === 'home') {
         displayedContent = displayedContent.filter(pair => pair.username === auth.user.username && pair.name.toLowerCase().includes(store.searchQuery.toLowerCase()))
     } else if (store.filter === 'group') {
