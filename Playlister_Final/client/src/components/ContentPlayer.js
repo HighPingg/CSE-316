@@ -166,7 +166,12 @@ export default function ContentPlayer() {
                     )) : ''
                 }
             </List>
-            <TextField sx={{ bgcolor: 'white', width: '100%' }} label="Comment" variant="outlined" value={commentSection} onChange={(event) => setCommentSection(event.target.value)} onKeyDown={handleCommentKey} />
+            {
+                auth.user != null && auth.user.username != null && store.videoPlayerPlaylist != null?
+                    <TextField sx={{ bgcolor: 'white', width: '100%' }} label="Comment" variant="outlined" value={commentSection} onChange={(event) => setCommentSection(event.target.value)} onKeyDown={handleCommentKey} />
+                : 
+                    <TextField disabled sx={{ bgcolor: 'white', width: '100%' }} label="Comments Disabled" variant="outlined" value={commentSection} />
+            }
         </Box>
     </Box>);
 }

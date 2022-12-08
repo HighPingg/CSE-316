@@ -1,5 +1,6 @@
 import React, { useContext, useEffect } from 'react'
 import { GlobalStoreContext } from '../store'
+import AuthContext from '../auth'
 import ListCard from './ListCard.js'
 import MUIDeleteModal from './MUIDeleteModal'
 import MUIEditSongModal from './MUIEditSongModal'
@@ -19,6 +20,7 @@ import ContentPlayer from './ContentPlayer'
 */
 const HomeScreen = () => {
     const { store } = useContext(GlobalStoreContext);
+    const { auth } = useContext(AuthContext);
 
     useEffect(() => {
         store.loadIdNamePairs();
@@ -27,12 +29,121 @@ const HomeScreen = () => {
     function handleCreateNewList() {
         store.createNewList();
     }
+
+    // Apply search filters and sorts
+    let displayedContent = store.idNamePairs;
+    if (store.filter === 'home') {
+        displayedContent = displayedContent.filter(pair => pair.username === auth.user.username && pair.name.toLowerCase().includes(store.searchQuery.toLowerCase()))
+    } else if (store.filter === 'group') {
+        displayedContent = displayedContent.filter(pair => pair.published !== -1 && pair.name.toLowerCase().includes(store.searchQuery.toLowerCase()));
+    } else if (store.filter === 'self') {
+        displayedContent = displayedContent.filter(pair => pair.username.toLowerCase().includes(store.searchQuery.toLowerCase()));
+    }
+
+    // Now we want to sort this content\
+    if (displayedContent !== null && displayedContent.length !== 0) {
+        if (store.sort === 'Creation Date' || store.sort === undefined) {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.createDate).getTime();
+                let bDate = new Date(b.createDate).getTime();
+
+                if (aDate > bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else if (store.sort === 'Last Edit Date') {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.updateDate).getTime();
+                let bDate = new Date(b.updateDate).getTime();
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else if (store.sort === 'Name') {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.name).getTime();
+                let bDate = new Date(b.name).getTime();
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else if (store.sort === 'Likes') {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.likes.length).getTime();
+                let bDate = new Date(b.likes.length).getTime();
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else if (store.sort === 'Dislikes') {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.dislikes.length).getTime();
+                let bDate = new Date(b.dislikes.length).getTime();
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else if (store.sort === 'Listens') {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.listens).getTime();
+                let bDate = new Date(b.listens).getTime();
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        } else if (store.sort === 'Publish Date') {
+            displayedContent = displayedContent.sort((a, b) => {
+                let aDate = new Date(a.published).getTime();
+                let bDate = new Date(b.published).getTime();
+
+                if (aDate < bDate) {
+                    return 1;
+                } else if (aDate === bDate) {
+                    return 0;
+                } else {
+                    return -1;
+                }
+            });
+        }
+    }
+
+    console.log(auth.user)
+
     let listCard = "";
     if (store) {
         listCard = 
             <List sx={{ height: '100%', width: '100%' }}>
             {
-                store.idNamePairs.map((pair) => (
+                displayedContent.map((pair) => (
                     <ListCard
                         key={pair._id}
                         idNamePair={pair}
@@ -55,16 +166,20 @@ const HomeScreen = () => {
             </div>
                 
             <div id="list-selector-heading">
-                <Fab 
-                    size='small'
-                    color="primary" 
-                    aria-label="add"
-                    id="add-list-button"
-                    onClick={handleCreateNewList}
-                    style={{marginRight: '10px'}}
-                >
-                    <AddIcon />
-                </Fab>
+                {
+                    auth.user.username !== null ?
+                    <Fab 
+                        size='small'
+                        color="primary" 
+                        aria-label="add"
+                        id="add-list-button"
+                        onClick={handleCreateNewList}
+                        style={{marginRight: '10px'}}
+                    >
+                        <AddIcon />
+                    </Fab>
+                    : ''
+                }
                 <Typography variant="h2" style={{fontSize: '25pt', fontWeight: 'bold'}}>Your Lists</Typography>
             </div>
             <MUIDeleteModal />

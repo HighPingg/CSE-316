@@ -116,6 +116,11 @@ function ListCard(props) {
         setText(event.target.value);
     }
 
+    function handleClickName(event, name) {
+        event.stopPropagation();
+        store.searchName(name);
+    }
+
     let selectClass = "unselected-list-card";
     if (selected) {
         selectClass = "selected-list-card";
@@ -130,6 +135,9 @@ function ListCard(props) {
         dropDown = <WorkspaceScreen />
     }
 
+    let undoStyle = store.canUndo() ? {} : {color: '#dedede'};
+    let redoStyle = store.canRedo() ? {} : {color: '#dedede'};
+
     let playlistControls = '';
     if (store.currentList != null && store.currentList._id == idNamePair._id) {
         playlistControls = <Box sx={{height: 'fit-content', width: '100%', position: 'relative', marginTop: '10px', display: 'flex', justifyContent: 'space-between'}}>
@@ -137,8 +145,8 @@ function ListCard(props) {
                 // If the song isn't published, then we can output this stuff
                 store.currentList.published === -1 && store.currentList.username === auth.user.username ?
                 <Box sx={{width: 'fit-content', margin: '0px'}}>
-                    <IconButton onClick={(event) => {event.stopPropagation(); store.undo()}}><UndoIcon /></IconButton>
-                    <IconButton onClick={(event) => {event.stopPropagation(); store.redo()}}><RedoIcon /></IconButton>
+                    <IconButton onClick={(event) => {event.stopPropagation(); store.undo()}}><UndoIcon style={undoStyle} /></IconButton>
+                    <IconButton onClick={(event) => {event.stopPropagation(); store.redo()}}><RedoIcon style={redoStyle} /></IconButton>
                 </Box> : ''
             }
             <Box style={{width: 'fit-content'}}>
@@ -153,7 +161,11 @@ function ListCard(props) {
                 <IconButton onClick={(event) => handleDeleteList(event, idNamePair._id)}><DeleteIcon /></IconButton>
                 : ''
             }
+            {
+                auth != null && auth.user.username != null ?
                 <IconButton onClick={handleDuplicate}><ContentCopyIcon /></IconButton>
+                : ''
+            }
             {
                 // If the song isn't published, then we can output this stuff
                 store.currentList.published === -1 && store.currentList.username === auth.user.username ?
@@ -171,6 +183,9 @@ function ListCard(props) {
         bottomControls = <IconButton sx={idNamePair.published === -1 ? {float: 'right'} : {}} onClick={(event) => handleDownArrow(event, idNamePair._id)}><KeyboardDoubleArrowDownIcon /></IconButton>
     }
 
+    let thumbsUpStyle = idNamePair.likes.includes(auth.user.username) ? {color: '#7289da'} : {};
+    let thumbsDownStyle = idNamePair.dislikes.includes(auth.user.username) ? {color: '#7289da'} : {};
+
     let cardElement =
         <Box style={{backgroundColor: 'white', borderRadius: '20px'}}>
             <ListItem
@@ -186,15 +201,15 @@ function ListCard(props) {
                 <Box sx={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
                     <Box sx={{ p: 1, flexGrow: 1 }}>
                         <span>{idNamePair.name}</span><br></br>
-                        <span style={{fontSize: '10pt'}}>By <span style={{color: '#7289da'}}>{idNamePair.username}</span></span>
+                        <span style={{fontSize: '10pt'}}>By <span onClick={(event) => handleClickName(event, idNamePair.username)} style={{color: '#7289da'}}>{idNamePair.username}</span></span>
                     </Box>
 
                     {
                         idNamePair.published != -1 ?
                             <Box sx={{float: 'right'}}>
-                                <IconButton onClick={handleLike}><ThumbUpIcon /></IconButton>
+                                <IconButton onClick={handleLike}><ThumbUpIcon style={thumbsUpStyle} /></IconButton>
                                 <span>{idNamePair.likes.length}</span>
-                                <IconButton onClick={handleDislike}><ThumbDownIcon /></IconButton>
+                                <IconButton onClick={handleDislike}><ThumbDownIcon style={thumbsDownStyle} /></IconButton>
                                 <span>{idNamePair.dislikes.length}</span>
                             </Box> : ''
                     }
@@ -211,7 +226,7 @@ function ListCard(props) {
                     {
                         // If this is published, then we can output the viewer information
                         idNamePair.published !== -1 ?
-                            <Box><span style={{fontSize: '8pt', textAlign: 'center'}} >Listens:&nbsp;<span style={{color: '#7289da'}}>{idNamePair.listens.length}</span></span></Box>
+                            <Box><span style={{fontSize: '8pt', textAlign: 'center'}} >Listens:&nbsp;<span style={{color: '#7289da'}}>{idNamePair.listens}</span></span></Box>
                         : ''
                     }
                     {bottomControls}

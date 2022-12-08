@@ -13,7 +13,8 @@ export const AuthActionType = {
     LOGOUT_USER: "LOGOUT_USER",
     REGISTER_USER: "REGISTER_USER",
     ACCOUNT_FAILURE: "ACCOUNT_FAILURE",
-    ACKNOWLEDGED_FAILURE: "ACKNOWLEDGED_FAILURE"
+    ACKNOWLEDGED_FAILURE: "ACKNOWLEDGED_FAILURE",
+    CONTINUE_GUEST: "CONTINUE_GUEST"
 }
 
 function AuthContextProvider(props) {
@@ -65,6 +66,12 @@ function AuthContextProvider(props) {
             case AuthActionType.ACKNOWLEDGED_FAILURE: {
                 return setAuth({
                     errorMsg: null
+                })
+            }
+            case AuthActionType.CONTINUE_GUEST: {
+                return setAuth({
+                    loggedIn: true,
+                    user: {username: null}
                 })
             }
             default:
@@ -144,12 +151,22 @@ function AuthContextProvider(props) {
 
     auth.getUserInitials = function() {
         let initials = "";
-        if (auth.user) {
+        if (auth.user && auth.user.username !== null) {
             initials += auth.user.firstName.charAt(0);
             initials += auth.user.lastName.charAt(0);
+        } else {
+            initials = "G"
         }
         console.log("user initials: " + initials);
         return initials;
+    }
+
+    auth.continueAsGuest = function () {
+        authReducer({
+            type: AuthActionType.CONTINUE_GUEST,
+            payload: null
+        });
+        history.push("/")
     }
 
     return (

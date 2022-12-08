@@ -81,7 +81,7 @@ function SongCard(props) {
                         key={index}
                         id={'song-' + index + '-card'}
                         onClick={(event) => {event.stopPropagation(); store.changeVideo(index)}}
-                        style={{color: 'white', backgroundColor: '#7289da', margin: '10px', borderRadius: '20px', padding: '8px'}}
+                        style={store.videoPlayerIndex === index && store.videoPlayerPlaylist._id === store.currentList._id ? {color: 'white', backgroundColor: '#7289da', margin: '10px', borderRadius: '20px', padding: '8px'} : {color: 'white', backgroundColor: '#99aab5', margin: '10px', borderRadius: '20px', padding: '8px'}}
                     >
                         {index + 1}.
                         <a

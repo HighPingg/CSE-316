@@ -46,12 +46,24 @@ export const updatePlaylistById = (id, playlist) => {
     })
 }
 
+export const public_getPlaylistPairs = () => api.get(`/publicplaylistpairs`)
+export const public_getPlaylistById = (id) => api.get(`/publicplaylist/${id}`)
+export const public_updatePlaylistById = (id, playlist) => {
+    return api.put(`/publicplaylist/${id}`, {
+        // SPECIFY THE PAYLOAD
+        playlist : playlist
+    })
+}
+
 const apis = {
     createPlaylist,
     deletePlaylistById,
     getPlaylistById,
     getPlaylistPairs,
-    updatePlaylistById
+    updatePlaylistById,
+    public_getPlaylistPairs,
+    public_getPlaylistById,
+    public_updatePlaylistById
 }
 
 export default apis
