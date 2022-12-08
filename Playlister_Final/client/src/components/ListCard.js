@@ -87,7 +87,7 @@ function ListCard(props) {
 
     function handleToggleEdit(event) {
         event.stopPropagation();
-        if (idNamePair.published === -1)
+        if (idNamePair.published === -1 && store.currentList._id != idNamePair._id)
             toggleEdit();
     }
 
