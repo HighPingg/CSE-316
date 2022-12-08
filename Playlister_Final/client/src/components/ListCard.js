@@ -87,7 +87,8 @@ function ListCard(props) {
 
     function handleToggleEdit(event) {
         event.stopPropagation();
-        toggleEdit();
+        if (idNamePair.published === -1)
+            toggleEdit();
     }
 
     function toggleEdit() {
@@ -108,8 +109,13 @@ function ListCard(props) {
     function handleKeyPress(event) {
         if (event.code === "Enter") {
             let id = event.target.id.substring("list-".length);
-            store.changeListName(id, text);
-            toggleEdit();
+
+            // If id is the same, then we toggle otherwise we can change the name
+            if (text == '') {
+                toggleEdit();
+            } else {
+                store.changeListName(id, text, toggleEdit);
+            }
         }
     }
     function handleUpdateText(event) {
@@ -197,6 +203,7 @@ function ListCard(props) {
                 onClick={(event) => {
                     handleLoadList(event, idNamePair._id)
                 }}
+                onDoubleClick={handleToggleEdit}
             >
                 <Box sx={{width: '100%', display: 'flex', justifyContent: 'space-between'}}>
                     <Box sx={{ p: 1, flexGrow: 1 }}>

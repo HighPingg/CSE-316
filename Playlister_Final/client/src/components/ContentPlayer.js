@@ -167,7 +167,7 @@ export default function ContentPlayer() {
                 }
             </List>
             {
-                auth.user != null && auth.user.username != null && store.videoPlayerPlaylist != null?
+                auth.user != null && auth.user.username != null && store.videoPlayerPlaylist != null && store.videoPlayerPlaylist.published != -1?
                     <TextField sx={{ bgcolor: 'white', width: '100%' }} label="Comment" variant="outlined" value={commentSection} onChange={(event) => setCommentSection(event.target.value)} onKeyDown={handleCommentKey} />
                 : 
                     <TextField disabled sx={{ bgcolor: 'white', width: '100%' }} label="Comments Disabled" variant="outlined" value={commentSection} />

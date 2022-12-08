@@ -554,7 +554,7 @@ function GlobalStoreContextProvider(props) {
     // RESPONSE TO EVENTS INSIDE OUR COMPONENTS.
 
     // THIS FUNCTION PROCESSES CHANGING A LIST NAME
-    store.changeListName = function (id, newName) {
+    store.changeListName = function (id, newName, toggleEdit) {
         // GET THE LIST
 
         async function asyncLoadIdNamePairs() {
@@ -562,7 +562,7 @@ function GlobalStoreContextProvider(props) {
             let GOTNAME = response.data.idNamePairs;
             if (response.data.success) {
                 // Check if the name is already in the database
-                if (GOTNAME.filter((element) => element.name == (newName) && element.username === auth.user.username).length == 0) {
+                if (GOTNAME.filter((element) => element.name == (newName) && element.username === auth.user.username && id != element._id).length == 0) {
                     async function asyncChangeListName(id) {
                         let response = await api.getPlaylistById(id);
                         if (response.data.success) {
@@ -581,6 +581,7 @@ function GlobalStoreContextProvider(props) {
                                                     idNamePairs: pairsArray,
                                                 }
                                             });
+                                            toggleEdit();
                                         }
                                     }
                                     getListPairs(playlist);
@@ -1096,7 +1097,7 @@ function GlobalStoreContextProvider(props) {
     }
 
     store.postComment = function (comment) {
-        if (store.videoPlayerPlaylist != null) {
+        if (store.videoPlayerPlaylist != null && store.videoPlayerPlaylist.published !== -1) {
             let newPlaylist = structuredClone(store.videoPlayerPlaylist);
             newPlaylist.comments.push({commentUsername: auth.user.username, comment: comment})
 
