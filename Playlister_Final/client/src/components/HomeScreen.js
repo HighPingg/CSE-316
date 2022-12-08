@@ -6,7 +6,7 @@ import MUIDeleteModal from './MUIDeleteModal'
 import MUIEditSongModal from './MUIEditSongModal'
 import MUIRemoveSongModal from './MUIRemoveSongModal'
 import NavigationBar from './NavigationBar'
-import { Select } from '@mui/material'
+import { Alert, AlertTitle, Dialog, Select } from '@mui/material'
 
 import AddIcon from '@mui/icons-material/Add';
 import Fab from '@mui/material/Fab'
@@ -138,6 +138,10 @@ const HomeScreen = () => {
 
     console.log(auth.user)
 
+    function handleCloseDialog() {
+        store.closeAlertModal();
+    }
+
     let listCard = "";
     if (store) {
         listCard = 
@@ -185,6 +189,14 @@ const HomeScreen = () => {
             <MUIDeleteModal />
             <MUIEditSongModal />
             <MUIRemoveSongModal />
+            <Dialog onClose={handleCloseDialog} open={store.errorModalMessage != null ? true : false}>
+                <Alert severity='error'>
+                    <AlertTitle>Error</AlertTitle>
+                    {
+                        store.errorModalMessage
+                    }
+                </Alert>
+            </Dialog>
         </div>)
 }
 
